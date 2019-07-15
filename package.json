@@ -1,0 +1,84 @@
+{
+  "name": "firebase-functions-rate-limiter",
+  "version": "1.0.0",
+  "description": "Js / ts library that allows you to set per - time, per - user or per - anything limits for calling Firebase cloud functions",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": ">=8"
+  },
+  "scripts": {
+    "check": "if echo \"$(node --version)\" | grep -q \"$(cat .nvmrc)\"; then echo \"Node version correct\"; else echo \"Node version does not match that in .nvmrc\" && exit 1; fi",
+    "build:cleanbefore": "rm -rf dist",
+    "build:lint": "tslint -c tslint.json -p tsconfig.lint.json",
+    "build:node": "tsc",
+    "build": "npm run check && npm run build:cleanbefore && npm run build:node && npm run build:lint",
+    "prepare": "NODE_ENV=production npm run build",
+    "test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+    "verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+    "lint-fix": "tslint --fix -c tslint.json -p tsconfig.lint.json",
+    "semantic-release": "semantic-release"
+  },
+  "dependencies": {
+    "ow": "^0.13.2",
+    "ts-custom-error": "^3.1.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "7.6.1",
+    "@commitlint/config-conventional": "7.6.0",
+    "@types/chai": "4.1.7",
+    "@types/chai-as-promised": "7.1.0",
+    "@types/mocha": "5.2.7",
+    "@types/node": "10.14.12",
+    "@types/sinon": "7.0.13",
+    "@types/uuid": "3.4.5",
+    "bluebird": "3.5.5",
+    "chai": "4.2.0",
+    "chai-as-promised": "7.1.1",
+    "husky": "^3.0.0",
+    "lodash": "4.17.14",
+    "mocha": "6.1.4",
+    "semantic-release": "^15.13.18",
+    "sinon": "7.3.2",
+    "ts-node": "8.3.0",
+    "tslint": "5.18.0",
+    "typescript": "3.5.3",
+    "uuid": "3.3.2",
+    "wise-tslint-configuration": "0.2.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "header-max-length": [
+        0
+      ],
+      "scope-case": [
+        0
+      ]
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "release": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wise-team/universe-log"
+  },
+  "keywords": [
+    "log"
+  ],
+  "author": "The Wise Team (https://wise-team.io/)",
+  "contributors": [
+    "Jędrzej Lewandowski <jedrzejblew@gmail.com> (https://jedrzej.lewandowski.doctor/)"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wise-team/universe-log/issues"
+  },
+  "homepage": "https://wise.vote/"
+}
