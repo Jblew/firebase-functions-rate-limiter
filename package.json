@@ -1,7 +1,7 @@
 {
   "name": "firebase-functions-rate-limiter",
-  "version": "1.0.0",
-  "description": "Js / ts library that allows you to set per - time, per - user or per - anything limits for calling Firebase cloud functions",
+  "version": "0.1.0",
+  "description": "JS/TS library that allows you to set per - time, per - user or per - anything limits for calling Firebase cloud functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "engines": {
@@ -20,16 +20,16 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "ow": "^0.13.2",
-    "ts-custom-error": "^3.1.1"
+    "firebase-admin": "^8.2.0",
+    "firebase-functions": "^3.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "7.6.1",
-    "@commitlint/config-conventional": "7.6.0",
+    "@commitlint/cli": "^8.0.0",
+    "@commitlint/config-conventional": "^8.0.0",
     "@types/chai": "4.1.7",
     "@types/chai-as-promised": "7.1.0",
     "@types/mocha": "5.2.7",
-    "@types/node": "10.14.12",
+    "@types/node": "^12.6.3",
     "@types/sinon": "7.0.13",
     "@types/uuid": "3.4.5",
     "bluebird": "3.5.5",
@@ -67,18 +67,19 @@
   "release": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/wise-team/universe-log"
+    "url": "https://github.com/jblew/firebase-functions-rate-limiter"
   },
   "keywords": [
-    "log"
+    "firebase",
+    "firebase-functions",
+    "rate-limiter"
   ],
-  "author": "The Wise Team (https://wise-team.io/)",
+  "author": "Jędrzej Lewandowski <jedrzejblew@gmail.com> (https://jedrzej.lewandowski.doctor/)",
   "contributors": [
     "Jędrzej Lewandowski <jedrzejblew@gmail.com> (https://jedrzej.lewandowski.doctor/)"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wise-team/universe-log/issues"
-  },
-  "homepage": "https://wise.vote/"
+    "url": "https://github.com/jblew/firebase-functions-rate-limiter/issues"
+  }
 }
