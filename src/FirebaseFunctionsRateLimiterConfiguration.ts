@@ -15,7 +15,7 @@ export namespace FirebaseFunctionsRateLimiterConfiguration {
 
     export namespace ConfigurationFull {
         export function validate(o: ConfigurationFull) {
-            ow(o.firebaseCollectionKey, "configuration.FirebaseFunctionsRateLimiter", ow.string.alphanumeric.nonEmpty);
+            ow(o.firebaseCollectionKey, "configuration.FirebaseFunctionsRateLimiter", ow.string.nonEmpty);
             ow(o.periodSeconds, "configuration.periodSeconds", ow.number.integer.finite.greaterThan(0));
             ow(o.maxCallsPerPeriod, "configuration.maxCallsPerPeriod", ow.number.integer.finite.greaterThan(0));
         }
