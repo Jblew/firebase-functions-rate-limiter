@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import ow from "ow";
+
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 import { GenericRateLimiter } from "./GenericRateLimiter";
 import { FirestorePersistenceProvider } from "./persistence/FirestorePersistenceProviter";
@@ -23,7 +24,7 @@ export class FirebaseFunctionsRateLimiter {
         this.genericRateLimiter = new GenericRateLimiter(configurationFull, persistenceProvider, timestampProvider);
     }
 
-    public async isQuotaUsed(qualifier: string): Promise<boolean> {
-        return await this.genericRateLimiter.isQuotaUsed(qualifier);
+    public async isQuotaExceeded(qualifier: string): Promise<boolean> {
+        return await this.genericRateLimiter.isQuotaExceeded(qualifier);
     }
 }

@@ -26,7 +26,7 @@ export class GenericRateLimiter {
         ow(this.timestampProvider, "timestampProvider", ow.object);
     }
 
-    public async isQuotaUsed(qualifier: string): Promise<boolean> {
+    public async isQuotaExceeded(qualifier: string): Promise<boolean> {
         const timestampsSeconds = this.getTimestampsSeconds();
 
         const recentUsagesCountHolder = {
