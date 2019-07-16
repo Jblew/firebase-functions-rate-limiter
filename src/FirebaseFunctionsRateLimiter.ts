@@ -33,7 +33,7 @@ export class FirebaseFunctionsRateLimiter {
             configurationFull,
             persistenceProvider,
             timestampProvider,
-            debugFn,
+            this.debugFn,
         );
     }
 
