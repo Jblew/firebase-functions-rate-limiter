@@ -16,7 +16,7 @@
     "prepare": "NODE_ENV=production npm run build",
     "test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
     "do_verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
-    "verify": "scripts/run-integration-tests-with-firebase-emulator.sh",
+    "verify": "bash scripts/run-integration-tests-with-firebase-emulator.sh",
     "lint-fix": "tslint --fix -c tslint.json -p tsconfig.lint.json",
     "semantic-release": "semantic-release"
   },
