@@ -2,7 +2,6 @@
 import * as firebase from "@firebase/testing";
 import { expect, use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
-import * as BluebirdPromise from "bluebird";
 import * as _ from "lodash";
 import "mocha";
 import * as sinon from "sinon";

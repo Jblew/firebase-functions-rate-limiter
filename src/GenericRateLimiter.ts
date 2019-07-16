@@ -26,24 +26,28 @@ export class GenericRateLimiter {
         ow(this.timestampProvider, "timestampProvider", ow.object);
     }
 
-    public async isQuotaExceeded(qualifier: string): Promise<boolean> {
+    public async isQuotaExceededOrRecordCall(qualifier: string): Promise<boolean> {
         const timestampsSeconds = this.getTimestampsSeconds();
 
-        const recentUsagesCountHolder = {
-            numOfRecentUsages: 0,
+        const result = {
+            isQuotaExceeded: false,
         };
         await this.persistenceProvider.runTransaction(async () => {
             const record = await this.getRecord(qualifier);
             const recentUsages: number[] = this.selectRecentUsages(record.usages, timestampsSeconds.threshold);
-            recentUsagesCountHolder.numOfRecentUsages = recentUsages.length;
-            recentUsages.push(timestampsSeconds.current);
+
+            result.isQuotaExceeded = this.isQuotaExceeded(recentUsages.length);
+
+            if (!result.isQuotaExceeded) {
+                recentUsages.push(timestampsSeconds.current);
+            }
             const newRecord: PersistenceRecord = {
                 usages: recentUsages,
             };
 
             await this.saveRecord(qualifier, newRecord);
         });
-        return recentUsagesCountHolder.numOfRecentUsages >= this.configuration.maxCallsPerPeriod;
+        return result.isQuotaExceeded;
     }
 
     private selectRecentUsages(allUsages: number[], timestampThresholdSeconds: number): number[] {
@@ -55,6 +59,10 @@ export class GenericRateLimiter {
             }
         }
         return recentUsages;
+    }
+
+    private isQuotaExceeded(numOfRecentUsages: number): boolean {
+        return numOfRecentUsages >= this.configuration.maxCallsPerPeriod;
     }
 
     private getTimestampsSeconds(): { current: number; threshold: number } {

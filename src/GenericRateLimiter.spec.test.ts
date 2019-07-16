@@ -30,7 +30,7 @@ describe("GenericRateLimiter", () => {
                 new TimestampProviderMock(),
             );
 
-            await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+            await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
         });
 
         it("calls getRecord and saveRecord", async () => {
@@ -43,7 +43,7 @@ describe("GenericRateLimiter", () => {
                 new TimestampProviderMock(),
             );
 
-            await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+            await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
 
             expect((persistenceProviderMock.getRecord as SinonSpy).callCount, "getRecord call count").to.be.equal(1);
             expect((persistenceProviderMock.saveRecord as SinonSpy).callCount, "saveRecord call count").to.be.equal(1);
@@ -67,7 +67,7 @@ describe("GenericRateLimiter", () => {
             const sampleTimestamp = _.random(10, 5000);
             timestampProviderMock.setTimestampSeconds(sampleTimestamp);
 
-            await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+            await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
 
             expect(_.values(persistenceProviderMock.persistenceObject)[0].usages).to.contain(sampleTimestamp);
         });
@@ -83,11 +83,11 @@ describe("GenericRateLimiter", () => {
 
             const sampleTimestamp = _.random(10, 5000);
             timestampProviderMock.setTimestampSeconds(sampleTimestamp);
-            const quotaExceeded1 = await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+            const quotaExceeded1 = await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
             expect(quotaExceeded1).to.be.equal(false);
 
             timestampProviderMock.setTimestampSeconds(sampleTimestamp + 1);
-            const quotaExceeded2 = await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+            const quotaExceeded2 = await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
             expect(quotaExceeded2).to.be.equal(true);
 
             expect(_.values(persistenceProviderMock.persistenceObject)[0].usages)
@@ -102,7 +102,7 @@ describe("GenericRateLimiter", () => {
             before(async () => {
                 const timestampProviderMock = new TimestampProviderMock();
                 const periodSeconds = 5;
-                const maxCallsPerPeriod = 1;
+                const maxCallsPerPeriod = 10;
                 const genericRateLimiter = new GenericRateLimiter(
                     { ...sampleConfiguration, periodSeconds, maxCallsPerPeriod },
                     persistenceProviderMock,
@@ -114,7 +114,7 @@ describe("GenericRateLimiter", () => {
                 for (let i = 0; i < 6; i++) {
                     timestampProviderMock.setTimestampSeconds(timestamp);
                     savedTimestamps.push(timestamp);
-                    await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+                    await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
                     timestamp += periodSeconds / 3 + 0.1; // remember: never push floats to the edges ;)
                 }
             });
@@ -153,10 +153,10 @@ describe("GenericRateLimiter", () => {
 
             for (let i = 0; i < 6; i++) {
                 timestampProviderMock.setTimestampSeconds(timestamp);
-                await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+                await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
                 timestamp += 1;
             }
-            expect(await genericRateLimiter.isQuotaExceeded(sampleQualifier)).to.be.equal(true);
+            expect(await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier)).to.be.equal(true);
         });
 
         it("returns false if there are exactly maxCalls calls in the period", async () => {
@@ -174,11 +174,11 @@ describe("GenericRateLimiter", () => {
 
             for (let i = 0; i < 2; i++) {
                 timestampProviderMock.setTimestampSeconds(timestamp);
-                await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+                await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
                 timestamp += 1;
             }
             // the following call is the third, should be passed
-            expect(await genericRateLimiter.isQuotaExceeded(sampleQualifier)).to.be.equal(false);
+            expect(await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier)).to.be.equal(false);
         });
 
         it("returns false if there are no calls, maxCallsPerPeriod=1 ant this is the first call", async () => {
@@ -194,7 +194,7 @@ describe("GenericRateLimiter", () => {
 
             const timestamp = _.random(10, 5000);
             timestampProviderMock.setTimestampSeconds(timestamp);
-            expect(await genericRateLimiter.isQuotaExceeded(sampleQualifier)).to.be.equal(false);
+            expect(await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier)).to.be.equal(false);
         });
 
         it("returns false if there are less calls than maxCalls", async () => {
@@ -212,11 +212,11 @@ describe("GenericRateLimiter", () => {
 
             for (let i = 0; i < 2; i++) {
                 timestampProviderMock.setTimestampSeconds(timestamp);
-                await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+                await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
                 timestamp += 1;
             }
             // the following call is the third, should be passed
-            expect(await genericRateLimiter.isQuotaExceeded(sampleQualifier)).to.be.equal(false);
+            expect(await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier)).to.be.equal(false);
         });
 
         it("returns false if exceeding calls are out of the period", async () => {
@@ -234,14 +234,14 @@ describe("GenericRateLimiter", () => {
 
             for (let i = 0; i < 10; i++) {
                 timestampProviderMock.setTimestampSeconds(timestamp);
-                await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+                await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
                 timestamp += 1;
             }
 
             timestamp += 30;
             timestampProviderMock.setTimestampSeconds(timestamp);
 
-            expect(await genericRateLimiter.isQuotaExceeded(sampleQualifier)).to.be.equal(false);
+            expect(await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier)).to.be.equal(false);
         });
 
         it("updates or reads only single qualifier", async () => {
@@ -259,12 +259,12 @@ describe("GenericRateLimiter", () => {
 
             for (let i = 0; i < 5; i++) {
                 timestampProviderMock.setTimestampSeconds(timestamp);
-                await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+                await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
                 timestamp += 1;
             }
 
             timestampProviderMock.setTimestampSeconds(timestamp);
-            expect(await genericRateLimiter.isQuotaExceeded("another_qualifier")).to.be.equal(false);
+            expect(await genericRateLimiter.isQuotaExceededOrRecordCall("another_qualifier")).to.be.equal(false);
         });
     });
 });
