@@ -14,9 +14,9 @@
     "build:node": "tsc",
     "build": "npm run check && npm run build:cleanbefore && npm run build:node && npm run build:lint",
     "prepare": "NODE_ENV=production npm run build",
-    "do_test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
-    "test": "scripts/run-tests-with-firebase-emulator.sh",
-    "verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+    "test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+    "do_verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+    "verify": "scripts/run-integration-tests-with-firebase-emulator.sh",
     "lint-fix": "tslint --fix -c tslint.json -p tsconfig.lint.json",
     "semantic-release": "semantic-release"
   },
@@ -35,7 +35,7 @@
     "@types/mocha": "5.2.7",
     "@types/node": "^12.6.3",
     "@types/sinon": "7.0.13",
-    "@types/uuid": "3.4.5",
+    "@types/uuid": "^3.4.5",
     "bluebird": "^3.5.5",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
@@ -48,7 +48,7 @@
     "ts-node": "8.3.0",
     "tslint": "5.18.0",
     "typescript": "3.5.3",
-    "uuid": "3.3.2",
+    "uuid": "^3.3.2",
     "wise-tslint-configuration": "0.2.0"
   },
   "commitlint": {

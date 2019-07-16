@@ -8,7 +8,7 @@ echo "Begin tests"
 (
     firebase serve --only firestore & 
     export FBPID=$! && 
-    (sleep 5 && npm run do_test) ; 
+    (sleep 5 && npm run do_verify) ; 
     echo "Killing firebase emulator server: $FBPID" && kill -STOP $FBPID 
 ) ; 
 echo "Tests done"
