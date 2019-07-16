@@ -28,7 +28,7 @@ export class FirebaseFunctionsRateLimiter {
         this.genericRateLimiter = new GenericRateLimiter(configurationFull, persistenceProvider, timestampProvider);
     }
 
-    public async isQuotaExceededOrRecordCall(qualifier: string): Promise<boolean> {
-        return await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier);
+    public async isQuotaExceededOrRecordCall(qualifier?: string): Promise<boolean> {
+        return await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
     }
 }
