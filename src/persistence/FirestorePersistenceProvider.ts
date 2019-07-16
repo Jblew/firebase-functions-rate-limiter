@@ -1,13 +1,15 @@
 import * as admin from "firebase-admin";
 import ow from "ow";
 
+import { FirestoreEquivalent } from "../FirestoreEquivalent";
+
 import { PersistenceProvider } from "./PersistenceProvider";
 import { PersistenceRecord } from "./PersistenceRecord";
 
 export class FirestorePersistenceProvider implements PersistenceProvider {
-    private firestore: admin.firestore.Firestore | FirebasePersistenceProvider.FirestoreEquvalent;
+    private firestore: admin.firestore.Firestore | FirestoreEquivalent;
 
-    public constructor(firestore: FirebasePersistenceProvider.FirestoreEquvalent) {
+    public constructor(firestore: FirestoreEquivalent) {
         this.firestore = firestore;
         ow(this.firestore, "firestore", ow.object);
     }
@@ -35,7 +37,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
     private getDocumentRef(
         collectionName: string,
         recordName: string,
-    ): FirebasePersistenceProvider.DocumentReferenceEquivalent {
+    ): FirestoreEquivalent.DocumentReferenceEquivalent {
         return this.firestore.collection(collectionName).doc(recordName);
     }
 
@@ -43,25 +45,5 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         return {
             usages: [],
         };
-    }
-}
-
-export namespace FirebasePersistenceProvider {
-    export interface FirestoreEquvalent {
-        runTransaction(tCallback: (transaction: any) => Promise<void>): Promise<void>;
-
-        collection(
-            name: string,
-        ): {
-            doc(name: string): DocumentReferenceEquivalent;
-        };
-    }
-
-    export interface DocumentReferenceEquivalent {
-        get(): Promise<{
-            exists: boolean;
-            data(): object | undefined;
-        }>;
-        set(record: object): Promise<any>;
     }
 }

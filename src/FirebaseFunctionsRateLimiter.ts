@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import ow from "ow";
 
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
+import { FirestoreEquivalent } from "./FirestoreEquivalent";
 import { GenericRateLimiter } from "./GenericRateLimiter";
 import { FirestorePersistenceProvider } from "./persistence/FirestorePersistenceProvider";
 import { FirebaseTimestampProvider } from "./timestamp/FirebaseTimestampProvider";
@@ -9,7 +10,10 @@ import { FirebaseTimestampProvider } from "./timestamp/FirebaseTimestampProvider
 export class FirebaseFunctionsRateLimiter {
     private genericRateLimiter: GenericRateLimiter;
 
-    public constructor(configuration: FirebaseFunctionsRateLimiterConfiguration, firestore: admin.firestore.Firestore) {
+    public constructor(
+        configuration: FirebaseFunctionsRateLimiterConfiguration,
+        firestore: admin.firestore.Firestore | FirestoreEquivalent,
+    ) {
         const configurationFull: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull = {
             ...FirebaseFunctionsRateLimiterConfiguration.DEFAULT_CONFIGURATION,
             ...configuration,
