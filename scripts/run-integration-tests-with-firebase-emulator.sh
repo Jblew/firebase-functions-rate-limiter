@@ -5,10 +5,10 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.." # parent dir of scrip
 cd "${DIR}"
 
 echo "Begin tests"
-(
+
     firebase serve --only firestore & 
     export FBPID=$! && 
-    (sleep 5 && npm run do_verify) ; 
+    sleep 5 && npm run do_verify ; 
     echo "Killing firebase emulator server: $FBPID" && kill -STOP $FBPID 
-) ; 
+
 echo "Tests done"
