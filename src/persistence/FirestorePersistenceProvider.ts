@@ -8,10 +8,18 @@ import { PersistenceRecord } from "./PersistenceRecord";
 
 export class FirestorePersistenceProvider implements PersistenceProvider {
     private firestore: admin.firestore.Firestore | FirestoreEquivalent;
+    private debugFn: (msg: string) => void;
 
-    public constructor(firestore: FirestoreEquivalent) {
+    public constructor(
+        firestore: FirestoreEquivalent,
+        debugFn: (msg: string) => void = (msg: string) => {
+            /* */
+        },
+    ) {
         this.firestore = firestore;
         ow(this.firestore, "firestore", ow.object);
+
+        this.debugFn = debugFn;
     }
 
     public async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
@@ -22,6 +30,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
 
     public async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
         const docSnapshot = await this.getDocumentRef(collectionName, recordName).get();
+        this.debugFn("Got record from collection=" + collectionName + ", document=" + recordName);
 
         if (!docSnapshot.exists) return this.createEmptyRecord();
 
@@ -31,6 +40,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
     }
 
     public async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {
+        this.debugFn("Save record collection=" + collectionName + ", document=" + recordName);
         await this.getDocumentRef(collectionName, recordName).set(record);
     }
 

@@ -33,28 +33,44 @@ export class GenericRateLimiter {
     }
 
     public async isQuotaExceededOrRecordCall(qualifier: string): Promise<boolean> {
-        const timestampsSeconds = this.getTimestampsSeconds();
-
         const result = {
             isQuotaExceeded: false,
         };
         await this.persistenceProvider.runTransaction(async () => {
-            const record = await this.getRecord(qualifier);
-            const recentUsages: number[] = this.selectRecentUsages(record.usages, timestampsSeconds.threshold);
-
-            result.isQuotaExceeded = this.isQuotaExceeded(recentUsages.length);
-
-            if (!result.isQuotaExceeded) {
-                recentUsages.push(timestampsSeconds.current);
-            }
-            const newRecord: PersistenceRecord = {
-                usages: recentUsages,
-            };
-            if (this.hasRecordChanged(record, newRecord)) {
-                await this.saveRecord(qualifier, newRecord);
-            }
+            result.isQuotaExceeded = await this.firebaseCheckInTransaction(qualifier);
         });
         return result.isQuotaExceeded;
+    }
+
+    private async firebaseCheckInTransaction(qualifier: string): Promise<boolean> {
+        const timestampsSeconds = this.getTimestampsSeconds();
+
+        this.debugFn("Loading persistence record for qualifier '" + qualifier + "' at " + timestampsSeconds.current);
+
+        const record = await this.getRecord(qualifier);
+        this.debugFn("Got record with usages " + record.usages.length);
+
+        const recentUsages: number[] = this.selectRecentUsages(record.usages, timestampsSeconds.threshold);
+        this.debugFn("Of these usages there are" + recentUsages.length + " usages that count into period");
+
+        const result = this.isQuotaExceeded(recentUsages.length);
+        this.debugFn("The result is quotaExceeded=" + result);
+
+        if (!result) {
+            this.debugFn("Quota was not exceeded, so recording a usage at " + timestampsSeconds.current);
+            recentUsages.push(timestampsSeconds.current);
+        }
+
+        const newRecord: PersistenceRecord = {
+            usages: recentUsages,
+        };
+        if (this.hasRecordChanged(record, newRecord)) {
+            this.debugFn("Record has changed. Saving");
+            await this.saveRecord(qualifier, newRecord);
+        } else {
+            this.debugFn("Record has not hanged. No need to save");
+        }
+        return result;
     }
 
     private selectRecentUsages(allUsages: number[], timestampThresholdSeconds: number): number[] {

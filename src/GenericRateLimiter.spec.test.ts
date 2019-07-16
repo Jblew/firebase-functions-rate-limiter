@@ -22,6 +22,18 @@ const sampleQualifier = "samplequalifier";
 
 describe("GenericRateLimiter", () => {
     describe("isQuotaUsed", () => {
+        it("Quota is not exceeded on first call when maxCallsPerPeriod=1", async () => {
+            const persistenceProviderMock: PersistenceProviderMock = new PersistenceProviderMock();
+            persistenceProviderMock.persistenceObject = {};
+            const genericRateLimiter = new GenericRateLimiter(
+                { ...sampleConfiguration, maxCallsPerPeriod: 1 },
+                persistenceProviderMock,
+                new TimestampProviderMock(),
+            );
+
+            expect(await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier)).to.be.equal(false);
+        });
+
         it("Does not fail on empty collection", async () => {
             const persistenceProviderMock: PersistenceProviderMock = new PersistenceProviderMock();
             persistenceProviderMock.persistenceObject = {};

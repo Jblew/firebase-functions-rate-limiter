@@ -4,6 +4,7 @@ export interface FirebaseFunctionsRateLimiterConfiguration {
     firebaseCollectionKey?: string;
     periodSeconds?: number;
     maxCallsPerPeriod?: number;
+    debug?: boolean;
 }
 
 export namespace FirebaseFunctionsRateLimiterConfiguration {
@@ -11,6 +12,7 @@ export namespace FirebaseFunctionsRateLimiterConfiguration {
         firebaseCollectionKey: string;
         periodSeconds: number;
         maxCallsPerPeriod: number;
+        debug: boolean;
     }
 
     export namespace ConfigurationFull {
@@ -18,6 +20,7 @@ export namespace FirebaseFunctionsRateLimiterConfiguration {
             ow(o.firebaseCollectionKey, "configuration.FirebaseFunctionsRateLimiter", ow.string.nonEmpty);
             ow(o.periodSeconds, "configuration.periodSeconds", ow.number.integer.finite.greaterThan(0));
             ow(o.maxCallsPerPeriod, "configuration.maxCallsPerPeriod", ow.number.integer.finite.greaterThan(0));
+            ow(o.debug, "configuration.debug", ow.boolean);
         }
     }
 
@@ -25,5 +28,6 @@ export namespace FirebaseFunctionsRateLimiterConfiguration {
         firebaseCollectionKey: "rate_limiter_1",
         periodSeconds: 5 * 60,
         maxCallsPerPeriod: 1,
+        debug: false,
     };
 }

@@ -1,3 +1,4 @@
+// tslint:disable no-console
 import * as admin from "firebase-admin";
 import ow from "ow";
 
@@ -9,6 +10,7 @@ import { FirebaseTimestampProvider } from "./timestamp/FirebaseTimestampProvider
 
 export class FirebaseFunctionsRateLimiter {
     private genericRateLimiter: GenericRateLimiter;
+    private debugFn: (msg: string) => void;
 
     public constructor(
         configuration: FirebaseFunctionsRateLimiterConfiguration,
@@ -23,12 +25,30 @@ export class FirebaseFunctionsRateLimiter {
 
         ow(firestore, "firestore", ow.object);
 
+        this.debugFn = this.constructDebugFn(configurationFull);
+
         const persistenceProvider = new FirestorePersistenceProvider(firestore);
         const timestampProvider = new FirebaseTimestampProvider();
-        this.genericRateLimiter = new GenericRateLimiter(configurationFull, persistenceProvider, timestampProvider);
+        this.genericRateLimiter = new GenericRateLimiter(
+            configurationFull,
+            persistenceProvider,
+            timestampProvider,
+            debugFn,
+        );
     }
 
     public async isQuotaExceededOrRecordCall(qualifier?: string): Promise<boolean> {
         return await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
+    }
+
+    private constructDebugFn(
+        config: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull,
+    ): (msg: string) => void {
+        if (config.debug) return (msg: string) => console.log(msg);
+        else {
+            return (msg: string) => {
+                /* */
+            };
+        }
     }
 }
