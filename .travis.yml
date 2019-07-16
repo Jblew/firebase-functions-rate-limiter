@@ -1,22 +1,25 @@
 dist: xenial
 language: node_js
 
+before_install:
+    - scripts/setup-firebase-emulator-for-tests.sh
+
 install:
-  - npm ci
+    - npm ci
 
 script:
-  - npm run build
-  - npm run test
+    - npm run build
+    - npm run test
 
 deploy:
-  - provider: script
-    script: npx semantic-release
-    skip_cleanup: true
-    on:
-      tags: false
-      all_branches: true
+    - provider: script
+      script: npx semantic-release
+      skip_cleanup: true
+      on:
+          tags: false
+          all_branches: true
 
 env:
-  global:
-    - secure: h69mh9tXfUqRFu+nEi40j7t8csTP+ZdXzC6m9YiG3r5YLR+GfxAMr4QklNXbAwoFIEGjpwkULpFdSyarX9Hj9TGMf/3E2cBc54enkIblc+Zx9s2T3ejd3JCiHkkNC5PlZeK7ZqnxIwprLt+uwKiE4chmCediSkcXnOJSqiIF1E5blObLCiryyxatJqT4que/WR4VIKEI4dMdyFtY15JL4l3MaT282nCmzX7+RNd4+kdCyAzH6v7wnw/eEYZmJxf9+T+r3VOpOvrVVduFPFQzETmGU/TAChkocW38M0D9Dka/maM7Bm9/MZZDIrPKuD9zRgkT+8GdMXr7AKnkYS7QSGeyUrPjnwQS9ihJNdHGOpWqD0b9DXNVyoP5f1TEfALKgBZr1pT07VfyPxWXEuKy5t8EL+mqKViD2Slx+KxuPpslvyYbUQLfbF0+8OjPhY7BOTqA9sbj3xyrmIZ7Cc147UbYnMyU2h4iqPpdsyyee2hAAtrMD0+WwViH9PMngg6vddm33SGVRRyO9lglg3lldrpjbkYE48SxJOXyLFXNhQLGhYaYmXh6AV+mBuNLOW5o9NnySedIdB+SeEIlUQBoYh01Tg/LrekB+daoXmeeL7hi87N/HnDDkn0+lRv4KJv0APsRjr16llHXuLgURRJ/yHUbNqaKaBAzajBnpefmaFM=
-    - secure: a0u8Ld4EbyJoG4cuWE/ieY6IcLcu1JcD2mCaX4J7VktuP0rsmolfuC2PV8N6NHodPDKxh0FdqqnAmWpMnBJkZeC1jCXLwo9KAu4Am4SeOXExVWsACVWP2bjqRsPkc1ZP2A3eXCl9g+MqfOqpzfWbAOjK8YmZQJ0QKFT+aLYdAKs1gjWvDsD44WYARWHDzrpzkRUeNTDbe8uWQwabSnNyWiIB4U8GnNu+PyFovEymFSaJvcXiTbXZ7tSlbrFdxzPPQ2oMrfARfjfG0iaarKsBVomEBSjl+Y3ujJWiBxJIlIHCq3lo2kBVlI9cVB7OdrC7lxNlwdMvjDlY5GwndzB2bd/yD/ocFvykaRyF+RaSSzM55PWBXKHXm807aSJF3JMNo9Dywd6UxtWHhv9qeTOpn5DM4ufdre7ySbh8O9VBq3jUorD4/J/wupxT8m0ONzAkofnkE1mQnKkGKqxungjwdayMCsru/V3tt23S2JX31Jqk8cU3BaYti+bt9j3Bt3OuBJY//tiyxOI3r/0OPnesScvve8reHR4ZaldFbqM3MOh7q0DqNYZVGRFj1i7ULu1/RCdR+lafQhMTfSVONncvoaoTtzAz7yM0w8LQrDMyDpfCLArEwurCDV9E4kMvRqmoWq1jx14JcyXfY/MlozyU7ugOylYjXz/hSWkfgPq1Brw=
+    global:
+        - secure: h69mh9tXfUqRFu+nEi40j7t8csTP+ZdXzC6m9YiG3r5YLR+GfxAMr4QklNXbAwoFIEGjpwkULpFdSyarX9Hj9TGMf/3E2cBc54enkIblc+Zx9s2T3ejd3JCiHkkNC5PlZeK7ZqnxIwprLt+uwKiE4chmCediSkcXnOJSqiIF1E5blObLCiryyxatJqT4que/WR4VIKEI4dMdyFtY15JL4l3MaT282nCmzX7+RNd4+kdCyAzH6v7wnw/eEYZmJxf9+T+r3VOpOvrVVduFPFQzETmGU/TAChkocW38M0D9Dka/maM7Bm9/MZZDIrPKuD9zRgkT+8GdMXr7AKnkYS7QSGeyUrPjnwQS9ihJNdHGOpWqD0b9DXNVyoP5f1TEfALKgBZr1pT07VfyPxWXEuKy5t8EL+mqKViD2Slx+KxuPpslvyYbUQLfbF0+8OjPhY7BOTqA9sbj3xyrmIZ7Cc147UbYnMyU2h4iqPpdsyyee2hAAtrMD0+WwViH9PMngg6vddm33SGVRRyO9lglg3lldrpjbkYE48SxJOXyLFXNhQLGhYaYmXh6AV+mBuNLOW5o9NnySedIdB+SeEIlUQBoYh01Tg/LrekB+daoXmeeL7hi87N/HnDDkn0+lRv4KJv0APsRjr16llHXuLgURRJ/yHUbNqaKaBAzajBnpefmaFM=
+        - secure: a0u8Ld4EbyJoG4cuWE/ieY6IcLcu1JcD2mCaX4J7VktuP0rsmolfuC2PV8N6NHodPDKxh0FdqqnAmWpMnBJkZeC1jCXLwo9KAu4Am4SeOXExVWsACVWP2bjqRsPkc1ZP2A3eXCl9g+MqfOqpzfWbAOjK8YmZQJ0QKFT+aLYdAKs1gjWvDsD44WYARWHDzrpzkRUeNTDbe8uWQwabSnNyWiIB4U8GnNu+PyFovEymFSaJvcXiTbXZ7tSlbrFdxzPPQ2oMrfARfjfG0iaarKsBVomEBSjl+Y3ujJWiBxJIlIHCq3lo2kBVlI9cVB7OdrC7lxNlwdMvjDlY5GwndzB2bd/yD/ocFvykaRyF+RaSSzM55PWBXKHXm807aSJF3JMNo9Dywd6UxtWHhv9qeTOpn5DM4ufdre7ySbh8O9VBq3jUorD4/J/wupxT8m0ONzAkofnkE1mQnKkGKqxungjwdayMCsru/V3tt23S2JX31Jqk8cU3BaYti+bt9j3Bt3OuBJY//tiyxOI3r/0OPnesScvve8reHR4ZaldFbqM3MOh7q0DqNYZVGRFj1i7ULu1/RCdR+lafQhMTfSVONncvoaoTtzAz7yM0w8LQrDMyDpfCLArEwurCDV9E4kMvRqmoWq1jx14JcyXfY/MlozyU7ugOylYjXz/hSWkfgPq1Brw=

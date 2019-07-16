@@ -14,7 +14,8 @@
     "build:node": "tsc",
     "build": "npm run check && npm run build:cleanbefore && npm run build:node && npm run build:lint",
     "prepare": "NODE_ENV=production npm run build",
-    "test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+    "do_test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+    "test": "scripts/run-tests-with-firebase-emulator.sh",
     "verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
     "lint-fix": "tslint --fix -c tslint.json -p tsconfig.lint.json",
     "semantic-release": "semantic-release"
@@ -27,6 +28,7 @@
   "devDependencies": {
     "@commitlint/cli": "^8.0.0",
     "@commitlint/config-conventional": "^8.0.0",
+    "@firebase/testing": "^0.11.5",
     "@types/bluebird": "^3.5.27",
     "@types/chai": "4.1.7",
     "@types/chai-as-promised": "7.1.0",
@@ -37,6 +39,7 @@
     "bluebird": "^3.5.5",
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
+    "firebase-functions-test": "^0.1.6",
     "husky": "^3.0.0",
     "lodash": "4.17.14",
     "mocha": "6.1.4",

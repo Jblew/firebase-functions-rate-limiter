@@ -5,15 +5,15 @@ import { PersistenceProvider } from "./PersistenceProvider";
 import { PersistenceRecord } from "./PersistenceRecord";
 
 export class FirestorePersistenceProvider implements PersistenceProvider {
-    private firestore: admin.firestore.Firestore;
+    private firestore: admin.firestore.Firestore | FirebasePersistenceProvider.FirestoreEquvalent;
 
-    public constructor(firestore: admin.firestore.Firestore) {
+    public constructor(firestore: FirebasePersistenceProvider.FirestoreEquvalent) {
         this.firestore = firestore;
         ow(this.firestore, "firestore", ow.object);
     }
 
     public async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
-        return await this.firestore.runTransaction(async transaction => {
+        return await this.firestore.runTransaction(async (transaction: any) => {
             await asyncTransactionFn();
         });
     }
@@ -32,7 +32,10 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         await this.getDocumentRef(collectionName, recordName).set(record);
     }
 
-    private getDocumentRef(collectionName: string, recordName: string): admin.firestore.DocumentReference {
+    private getDocumentRef(
+        collectionName: string,
+        recordName: string,
+    ): FirebasePersistenceProvider.DocumentReferenceEquivalent {
         return this.firestore.collection(collectionName).doc(recordName);
     }
 
@@ -40,5 +43,25 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         return {
             usages: [],
         };
+    }
+}
+
+export namespace FirebasePersistenceProvider {
+    export interface FirestoreEquvalent {
+        runTransaction(tCallback: (transaction: any) => Promise<void>): Promise<void>;
+
+        collection(
+            name: string,
+        ): {
+            doc(name: string): DocumentReferenceEquivalent;
+        };
+    }
+
+    export interface DocumentReferenceEquivalent {
+        get(): Promise<{
+            exists: boolean;
+            data(): object | undefined;
+        }>;
+        set(record: object): Promise<any>;
     }
 }
