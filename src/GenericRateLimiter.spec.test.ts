@@ -55,7 +55,7 @@ describe("GenericRateLimiter", () => {
             ).to.be.equal(true);
         });
 
-        it("saved record contains new current timestamp", async () => {
+        it("puts new current timestamp when quota was not exceeded", async () => {
             const persistenceProviderMock: PersistenceProviderMock = new PersistenceProviderMock();
             const timestampProviderMock = new TimestampProviderMock();
             const genericRateLimiter = new GenericRateLimiter(
@@ -70,6 +70,29 @@ describe("GenericRateLimiter", () => {
             await genericRateLimiter.isQuotaExceeded(sampleQualifier);
 
             expect(_.values(persistenceProviderMock.persistenceObject)[0].usages).to.contain(sampleTimestamp);
+        });
+
+        it("does not put current timestamp when quota was exceeded", async () => {
+            const persistenceProviderMock: PersistenceProviderMock = new PersistenceProviderMock();
+            const timestampProviderMock = new TimestampProviderMock();
+            const genericRateLimiter = new GenericRateLimiter(
+                { ...sampleConfiguration, maxCallsPerPeriod: 1, periodSeconds: 20 },
+                persistenceProviderMock,
+                timestampProviderMock,
+            );
+
+            const sampleTimestamp = _.random(10, 5000);
+            timestampProviderMock.setTimestampSeconds(sampleTimestamp);
+            const quotaExceeded1 = await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+            expect(quotaExceeded1).to.be.equal(false);
+
+            timestampProviderMock.setTimestampSeconds(sampleTimestamp + 1);
+            const quotaExceeded2 = await genericRateLimiter.isQuotaExceeded(sampleQualifier);
+            expect(quotaExceeded2).to.be.equal(true);
+
+            expect(_.values(persistenceProviderMock.persistenceObject)[0].usages)
+                .to.be.an("array")
+                .with.length(1);
         });
 
         describe("threshold tests", () => {
