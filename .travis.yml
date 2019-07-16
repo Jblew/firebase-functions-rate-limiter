@@ -1,5 +1,11 @@
 dist: xenial
 language: node_js
+node_js:
+  - '8'
+
+branches:
+  except:
+    - /^v[0-9]/
 
 before_install:
     - scripts/setup-firebase-emulator-for-tests.sh
@@ -16,6 +22,7 @@ deploy:
     - provider: script
       script: npx semantic-release
       skip_cleanup: true
+      node_js: 8
       on:
           tags: false
           all_branches: true
