@@ -3,7 +3,7 @@ import ow from "ow";
 
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 import { GenericRateLimiter } from "./GenericRateLimiter";
-import { FirestorePersistenceProvider } from "./persistence/FirestorePersistenceProviter";
+import { FirestorePersistenceProvider } from "./persistence/FirestorePersistenceProvider";
 import { FirebaseTimestampProvider } from "./timestamp/FirebaseTimestampProvider";
 
 export class FirebaseFunctionsRateLimiter {
