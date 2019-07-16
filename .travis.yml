@@ -1,14 +1,11 @@
 dist: xenial
 language: node_js
 node_js:
-  - '8'
+    - "8"
 
 branches:
-  except:
-    - /^v[0-9]/
-
-before_install:
-    - scripts/setup-firebase-emulator-for-tests.sh
+    except:
+        - /^v[0-9]/
 
 install:
     - npm ci
