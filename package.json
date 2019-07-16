@@ -1,6 +1,6 @@
 {
   "name": "firebase-functions-rate-limiter",
-  "version": "0.1.0",
+  "version": "0.0.0-development",
   "description": "JS/TS library that allows you to set per - time, per - user or per - anything limits for calling Firebase cloud functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
