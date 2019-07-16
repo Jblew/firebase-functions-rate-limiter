@@ -9,11 +9,15 @@ export class GenericRateLimiter {
     private configuration: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull;
     private persistenceProvider: PersistenceProvider;
     private timestampProvider: TimestampProvider;
+    private debugFn: (msg: string) => void;
 
     public constructor(
         configuration: FirebaseFunctionsRateLimiterConfiguration,
         persistenceProvider: PersistenceProvider,
         timestampProvider: TimestampProvider,
+        debugFn: (msg: string) => void = (msg: string) => {
+            /* */
+        },
     ) {
         this.configuration = { ...FirebaseFunctionsRateLimiterConfiguration.DEFAULT_CONFIGURATION, ...configuration };
         ow(this.configuration, "configuration", ow.object);
@@ -24,6 +28,8 @@ export class GenericRateLimiter {
 
         this.timestampProvider = timestampProvider;
         ow(this.timestampProvider, "timestampProvider", ow.object);
+
+        this.debugFn = debugFn;
     }
 
     public async isQuotaExceededOrRecordCall(qualifier: string): Promise<boolean> {
@@ -44,8 +50,9 @@ export class GenericRateLimiter {
             const newRecord: PersistenceRecord = {
                 usages: recentUsages,
             };
-
-            await this.saveRecord(qualifier, newRecord);
+            if (this.hasRecordChanged(record, newRecord)) {
+                await this.saveRecord(qualifier, newRecord);
+            }
         });
         return result.isQuotaExceeded;
     }
@@ -71,6 +78,19 @@ export class GenericRateLimiter {
             current: currentServerTimestampSeconds,
             threshold: currentServerTimestampSeconds - this.configuration.periodSeconds,
         };
+    }
+
+    private hasRecordChanged(oldRecord: PersistenceRecord, newRecord: PersistenceRecord): boolean {
+        if (oldRecord.usages.length !== newRecord.usages.length) {
+            return true;
+        } else {
+            const a1 = oldRecord.usages.concat().sort();
+            const a2 = newRecord.usages.concat().sort();
+            for (let i = 0; i < a1.length; i++) {
+                if (a1[i] !== a2[i]) return true;
+            }
+            return false;
+        }
     }
 
     private async getRecord(qualifier: string): Promise<PersistenceRecord> {

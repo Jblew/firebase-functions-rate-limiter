@@ -16,6 +16,7 @@ const sampleConfiguration: FirebaseFunctionsRateLimiterConfiguration.Configurati
     firebaseCollectionKey: "rate_limiter_1",
     periodSeconds: 5 * 60,
     maxCallsPerPeriod: 1,
+    debug: false,
 };
 const sampleQualifier = "samplequalifier";
 
@@ -265,6 +266,66 @@ describe("GenericRateLimiter", () => {
 
             timestampProviderMock.setTimestampSeconds(timestamp);
             expect(await genericRateLimiter.isQuotaExceededOrRecordCall("another_qualifier")).to.be.equal(false);
+        });
+
+        it("calls saveRecord when quota exceeded but old timestamps decayed", async () => {
+            const persistenceProviderMock: PersistenceProviderMock = new PersistenceProviderMock();
+            const timestampProviderMock = new TimestampProviderMock();
+            const periodSeconds = 20;
+            const maxCallsPerPeriod = 1;
+            const genericRateLimiter = new GenericRateLimiter(
+                { ...sampleConfiguration, periodSeconds, maxCallsPerPeriod },
+                persistenceProviderMock,
+                timestampProviderMock,
+            );
+
+            let timestamp = _.random(10, 5000);
+
+            for (let i = 0; i < 5; i++) {
+                timestampProviderMock.setTimestampSeconds(timestamp);
+                await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
+                timestamp += 1;
+            }
+
+            timestamp += 30;
+            timestampProviderMock.setTimestampSeconds(timestamp);
+
+            persistenceProviderMock.saveRecord = spy(persistenceProviderMock.saveRecord);
+            timestamp += 1;
+            timestampProviderMock.setTimestampSeconds(timestamp);
+            await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
+
+            expect((persistenceProviderMock.saveRecord as SinonSpy).callCount, "saveRecord call count").to.be.equal(1);
+        });
+
+        it("does not call saveRecord when quota exceeded but old timestamps not decayed", async () => {
+            const persistenceProviderMock: PersistenceProviderMock = new PersistenceProviderMock();
+            const timestampProviderMock = new TimestampProviderMock();
+            const periodSeconds = 100;
+            const maxCallsPerPeriod = 1;
+            const genericRateLimiter = new GenericRateLimiter(
+                { ...sampleConfiguration, periodSeconds, maxCallsPerPeriod },
+                persistenceProviderMock,
+                timestampProviderMock,
+            );
+
+            let timestamp = _.random(10, 5000);
+
+            for (let i = 0; i < 5; i++) {
+                timestampProviderMock.setTimestampSeconds(timestamp);
+                await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
+                timestamp += 1;
+            }
+
+            timestamp += 30;
+            timestampProviderMock.setTimestampSeconds(timestamp);
+
+            persistenceProviderMock.saveRecord = spy(persistenceProviderMock.saveRecord);
+            timestamp += 1;
+            timestampProviderMock.setTimestampSeconds(timestamp);
+            await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
+
+            expect((persistenceProviderMock.saveRecord as SinonSpy).callCount, "saveRecord call count").to.be.equal(0);
         });
     });
 });
