@@ -71,7 +71,7 @@
   "release": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/jblew/firebase-functions-rate-limiter"
+    "url": "https://github.com/Jblew/firebase-functions-rate-limiter"
   },
   "keywords": [
     "firebase",
@@ -84,6 +84,6 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jblew/firebase-functions-rate-limiter/issues"
+    "url": "https://github.com/Jblew/firebase-functions-rate-limiter/issues"
   }
 }
