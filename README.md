@@ -22,7 +22,7 @@ Mission: **limit number of calls per specified period of time**
 ### Installation
 
 ```bash
-$ npm install --save 
+$ npm install --save firebase-functions-rate-limiter
 ```
 
 Then:
