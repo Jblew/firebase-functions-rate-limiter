@@ -183,3 +183,27 @@ const configuration = {
 ### Firebase configuration
 
 There is no configuration needed in the firebase. This library does not do document search, so you do not need indexes. Also, functions are executed in the firebase admin environment, so you do not have to specify any rules.
+
+
+
+### Need help?
+
+- Feel free to email me at <jedrzej@lewandowski.doctor>
+
+
+
+### Would like to help?
+
+Warmly welcomed:
+
+- Bug reports via issues
+- Enhancement requests via via issues
+- Pull requests
+- Security reports to jedrzej@lewandowski.doctor
+
+
+
+***
+
+Made with ❤️ by [Jędrzej Lewandowski](https://jedrzej.lewandowski.doctor/).
+
