@@ -59,18 +59,14 @@ const limiter = new FirebaseFunctionsRateLimiter(
 );
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
-    const quotaExceeded = await limiter.isQuotaExceededOrRecordCall();
-    if (quotaExceeded) {
-        res.status(500);
-        res.send("Error: call quota exceeded");
-        return;
-    }
+    await limiter.rejectIfQuotaExceededOrRecordCall(); // will throw HttpsException with proper warning
 
     res.send("Function called");
 });
 
 ```
 
+>  You can use two functions: `limiter.rejectIfQuotaExceededOrRecordCall(qualifier?)` will throw an *functions.https.HttpsException* when limit is exceeded while `limiter.isQuotaExceededOrRecordCall(qualifier?)` gives you the ability to choose how to handle the situation.
 
 
 **Example 2**: limit calls for each user separately (function called directly - please refer [firebase docs on this topic](https://firebase.google.com/docs/functions/callable)):

@@ -3,6 +3,7 @@ import * as firebase from "@firebase/testing";
 import * as BluebirdPromise from "bluebird";
 import { expect, use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
+import * as functions from "firebase-functions";
 import * as _ from "lodash";
 import "mocha";
 import * as uuid from "uuid/v4";
@@ -166,6 +167,26 @@ describe("FirebaseFunctionsRateLimiter", () => {
             expect(record.usages)
                 .to.be.an("array")
                 .with.length(1);
+        });
+    });
+
+    describe("rejectIfQuotaExceededOrRecordCall", () => {
+        it("throws functions.https.HttpsException when limit is exceeded", async () => {
+            const maxCallsPerPeriod = 1;
+            const noOfTestCalls = 2;
+
+            const { rateLimiter, qualifier } = mock({
+                maxCallsPerPeriod,
+            });
+
+            for (let i = 0; i < noOfTestCalls; i++) {
+                await BluebirdPromise.delay(5);
+                await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+            }
+
+            expect(rateLimiter.rejectIfQuotaExceededOrRecordCall(qualifier)).to.eventually.be.rejectedWith(
+                functions.https.HttpsError,
+            );
         });
     });
 });

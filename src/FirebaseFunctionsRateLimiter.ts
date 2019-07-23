@@ -1,5 +1,6 @@
 // tslint:disable no-console
 import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 import ow from "ow";
 
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
@@ -9,6 +10,7 @@ import { FirestorePersistenceProvider } from "./persistence/FirestorePersistence
 import { FirebaseTimestampProvider } from "./timestamp/FirebaseTimestampProvider";
 
 export class FirebaseFunctionsRateLimiter {
+    private configurationFull: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull;
     private genericRateLimiter: GenericRateLimiter;
     private debugFn: (msg: string) => void;
 
@@ -16,21 +18,21 @@ export class FirebaseFunctionsRateLimiter {
         configuration: FirebaseFunctionsRateLimiterConfiguration,
         firestore: admin.firestore.Firestore | FirestoreEquivalent,
     ) {
-        const configurationFull: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull = {
+        this.configurationFull = {
             ...FirebaseFunctionsRateLimiterConfiguration.DEFAULT_CONFIGURATION,
             ...configuration,
         };
-        ow(configurationFull, "configuration", ow.object);
-        FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull.validate(configurationFull);
+        ow(this.configurationFull, "configuration", ow.object);
+        FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull.validate(this.configurationFull);
 
         ow(firestore, "firestore", ow.object);
 
-        this.debugFn = this.constructDebugFn(configurationFull);
+        this.debugFn = this.constructDebugFn(this.configurationFull);
 
         const persistenceProvider = new FirestorePersistenceProvider(firestore);
         const timestampProvider = new FirebaseTimestampProvider();
         this.genericRateLimiter = new GenericRateLimiter(
-            configurationFull,
+            this.configurationFull,
             persistenceProvider,
             timestampProvider,
             this.debugFn,
@@ -39,6 +41,22 @@ export class FirebaseFunctionsRateLimiter {
 
     public async isQuotaExceededOrRecordCall(qualifier?: string): Promise<boolean> {
         return await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
+    }
+
+    public async rejectIfQuotaExceededOrRecordCall(qualifier?: string): Promise<void> {
+        const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
+        if (isExceeded) {
+            throw this.constructRejectionError(qualifier);
+        }
+    }
+
+    private constructRejectionError(qualifier?: string): functions.https.HttpsError {
+        const c = this.configurationFull;
+        const msg =
+            `FirebaseFunctionsRateLimiter error: Limit of ${c.maxCallsPerPeriod} calls per ` +
+            `${c.periodSeconds} seconds exceeded for ${qualifier ? "qualifier '" + qualifier + "' in " : ""}` +
+            `limiter ${c.firebaseCollectionKey}`;
+        return new functions.https.HttpsError("resource-exhausted", msg);
     }
 
     private constructDebugFn(
