@@ -1,5 +1,5 @@
 # Firebase functions rate limiter
-[![npm](https://img.shields.io/npm/v/firebase-functions-rate-limiter.svg?style=flat-square)](https://www.npmjs.com/package/firebase-functions-rate-limiter)  [![build](https://travis-ci.com/Jblew/firebase-functions-rate-limiter.svg?branch=master)](https://travis-ci.com/Jblew/firebase-functions-rate-limiter) [![License](https://img.shields.io/github/license/wise-team/steem-content-renderer.svg?style=flat-square)](https://github.com/wise-team/steem-content-renderer/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![npm](https://img.shields.io/npm/v/firebase-functions-rate-limiter.svg?style=flat-square)](https://www.npmjs.com/package/firebase-functions-rate-limiter)  [![build](https://travis-ci.com/Jblew/firebase-functions-rate-limiter.svg?branch=master)](https://travis-ci.com/Jblew/firebase-functions-rate-limiter) [![License](https://img.shields.io/github/license/Jblew/firebase-functions-rate-limiter.svg?style=flat-square)](https://github.com/Jblew/firebase-functions-rate-limiter/blob/master/LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 
 
