@@ -27,7 +27,7 @@
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
-    "@firebase/testing": "^0.11.6",
+    "@firebase/testing": "^0.11.5",
     "@types/bluebird": "^3.5.27",
     "@types/chai": "4.1.7",
     "@types/chai-as-promised": "7.1.0",
