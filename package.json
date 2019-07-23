@@ -7,6 +7,12 @@
   "engines": {
     "node": ">=8"
   },
+  "files": [
+    "/dist",
+    "/src",
+    "package-lock.js"
+  ],
+
   "scripts": {
     "check": "if echo \"$(node --version)\" | grep -q \"$(cat .nvmrc)\"; then echo \"Node version correct\"; else echo \"Node version does not match that in .nvmrc\" && exit 1; fi",
     "build:cleanbefore": "rm -rf dist",
