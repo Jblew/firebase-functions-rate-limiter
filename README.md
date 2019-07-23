@@ -28,11 +28,11 @@ $ npm install --save firebase-functions-rate-limiter
 Then:
 
 ```typescript
-import { FirebaseFunctionsRateLimiter } from "firebase-functions-rate-limiter";
+import FirebaseFunctionsRateLimiter from "firebase-functions-rate-limiter";
 
 // or
 
-const { FirebaseFunctionsRateLimiter } = require("firebase-functions-rate-limiter");
+const FirebaseFunctionsRateLimiter = require("firebase-functions-rate-limiter");
 ```
 
 
