@@ -43,10 +43,10 @@ afterEach(async () => {
 });
 
 describe("FirebaseFunctionsRateLimiter", () => {
-    describe("isQuotaExceededOrRecordCall", () => {
+    describe("isQuotaExceeded", () => {
         it("Writes to specified collection", async () => {
             const { rateLimiter, firestore, uniqueCollectionName } = mock({});
-            await rateLimiter.isQuotaExceededOrRecordCall();
+            await rateLimiter.isQuotaExceeded();
 
             const collection = await firestore.collection(uniqueCollectionName).get();
             expect(collection.size).to.be.equal(1);
@@ -54,7 +54,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
 
         it("Uses qualifier to identify document in the collection", async () => {
             const { rateLimiter, firestore, uniqueCollectionName, qualifier } = mock({});
-            await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+            await rateLimiter.isQuotaExceeded(qualifier);
 
             const doc = await firestore
                 .collection(uniqueCollectionName)
@@ -75,7 +75,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
             const noOfTestCalls = 5;
             for (let i = 0; i < noOfTestCalls; i++) {
                 await BluebirdPromise.delay(5);
-                await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+                await rateLimiter.isQuotaExceeded(qualifier);
             }
 
             const doc = await firestore
@@ -98,7 +98,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
 
             for (let i = 0; i < noOfTestCalls; i++) {
                 await BluebirdPromise.delay(5);
-                await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+                await rateLimiter.isQuotaExceeded(qualifier);
             }
 
             const doc = await firestore
@@ -121,10 +121,10 @@ describe("FirebaseFunctionsRateLimiter", () => {
 
             for (let i = 0; i < noOfTestCalls; i++) {
                 await BluebirdPromise.delay(5);
-                await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+                await rateLimiter.isQuotaExceeded(qualifier);
             }
 
-            expect(await rateLimiter.isQuotaExceededOrRecordCall(qualifier)).to.be.equal(true);
+            expect(await rateLimiter.isQuotaExceeded(qualifier)).to.be.equal(true);
         });
 
         it("Limit is not exceeded if too much calls not in specified period", async function() {
@@ -138,9 +138,9 @@ describe("FirebaseFunctionsRateLimiter", () => {
                 periodSeconds,
             });
 
-            await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+            await rateLimiter.isQuotaExceeded(qualifier);
             await BluebirdPromise.delay(periodSeconds * 1000 + 200);
-            expect(await rateLimiter.isQuotaExceededOrRecordCall(qualifier)).to.be.equal(false);
+            expect(await rateLimiter.isQuotaExceeded(qualifier)).to.be.equal(false);
         });
 
         it("Calls older than period are removed from the database", async function() {
@@ -154,9 +154,9 @@ describe("FirebaseFunctionsRateLimiter", () => {
                 periodSeconds,
             });
 
-            await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+            await rateLimiter.isQuotaExceeded(qualifier);
             await BluebirdPromise.delay(periodSeconds * 1000 + 200);
-            await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+            await rateLimiter.isQuotaExceeded(qualifier);
             await BluebirdPromise.delay(200);
 
             const doc = await firestore
@@ -181,10 +181,10 @@ describe("FirebaseFunctionsRateLimiter", () => {
 
             for (let i = 0; i < noOfTestCalls; i++) {
                 await BluebirdPromise.delay(5);
-                await rateLimiter.isQuotaExceededOrRecordCall(qualifier);
+                await rateLimiter.isQuotaExceeded(qualifier);
             }
 
-            expect(rateLimiter.rejectIfQuotaExceededOrRecordCall(qualifier)).to.eventually.be.rejectedWith(
+            expect(rateLimiter.rejectOnQuotaExceeded(qualifier)).to.eventually.be.rejectedWith(
                 functions.https.HttpsError,
             );
         });
