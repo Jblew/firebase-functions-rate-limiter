@@ -54,7 +54,7 @@ export class FirebaseFunctionsRateLimiter {
         const c = this.configurationFull;
         const msg =
             `FirebaseFunctionsRateLimiter error: Limit of ${c.maxCallsPerPeriod} calls per ` +
-            `${c.periodSeconds} seconds exceeded for ${qualifier ? "qualifier '" + qualifier + "' in " : ""}` +
+            `${c.periodSeconds} seconds exceeded for ${qualifier ? "specified qualifier in " : ""}` +
             `limiter ${c.firebaseCollectionKey}`;
         return new functions.https.HttpsError("resource-exhausted", msg);
     }
