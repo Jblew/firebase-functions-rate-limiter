@@ -59,14 +59,14 @@ const limiter = new FirebaseFunctionsRateLimiter(
 );
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
-    await limiter.rejectIfQuotaExceededOrRecordCall(); // will throw HttpsException with proper warning
+    await limiter.rejectOnQuotaExceeded(); // will throw HttpsException with proper warning
 
     res.send("Function called");
 });
 
 ```
 
->  You can use two functions: `limiter.rejectIfQuotaExceededOrRecordCall(qualifier?)` will throw an *functions.https.HttpsException* when limit is exceeded while `limiter.isQuotaExceededOrRecordCall(qualifier?)` gives you the ability to choose how to handle the situation.
+>  You can use two functions: `limiter.rejectOnQuotaExceeded(qualifier?)` will throw an *functions.https.HttpsException* when limit is exceeded while `limiter.isQuotaExceeded(qualifier?)` gives you the ability to choose how to handle the situation.
 
 
 **Example 2**: limit calls for each user separately (function called directly - please refer [firebase docs on this topic](https://firebase.google.com/docs/functions/callable)):
@@ -97,7 +97,7 @@ exports.authenticatedFunction =
         );
     }
     const uidQualifier = "u_" + context.auth.uid;
-    const isQuotaExceeded = await perUserlimiter.isQuotaExceededOrRecordCall(uidQualifier);
+    const isQuotaExceeded = await perUserlimiter.isQuotaExceeded(uidQualifier);
     if (isQuotaExceeded) {
         throw new functions.https.HttpsError(
             "failed-precondition",
@@ -134,12 +134,12 @@ const someLimiter = new FirebaseFunctionsRateLimiter(
 );
 ```
 
-**#3** Inside the function call isQuotaExceededOrRecordCall. This is an async function so not forget about **await**! The function will check if the limit was exceeded. If limit was not exceeded it will record this usage and return true. Otherwise, write will be only called if there are usage records that are older than the specified period and are about to being cleared.
+**#3** Inside the function call isQuotaExceeded. This is an async function so not forget about **await**! The function will check if the limit was exceeded. If limit was not exceeded it will record this usage and return true. Otherwise, write will be only called if there are usage records that are older than the specified period and are about to being cleared.
 
 ```typescript
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
-    const quotaExceeded = await limiter.isQuotaExceededOrRecordCall();
+    const quotaExceeded = await limiter.isQuotaExceeded();
     if (quotaExceeded) {
     	// respond with error
     } else {
@@ -153,7 +153,7 @@ exports.testRateLimiter =
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
     const qualifier = "user_1";
-    const quotaExceeded = await limiter.isQuotaExceededOrRecordCall(qualifier);
+    const quotaExceeded = await limiter.isQuotaExceeded(qualifier);
     if (quotaExceeded) {
     	// respond with error
     } else {

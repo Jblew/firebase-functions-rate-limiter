@@ -39,11 +39,11 @@ export class FirebaseFunctionsRateLimiter {
         );
     }
 
-    public async isQuotaExceededOrRecordCall(qualifier?: string): Promise<boolean> {
+    public async isQuotaExceeded(qualifier?: string): Promise<boolean> {
         return await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
     }
 
-    public async rejectIfQuotaExceededOrRecordCall(qualifier?: string): Promise<void> {
+    public async rejectOnQuotaExceeded(qualifier?: string): Promise<void> {
         const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
         if (isExceeded) {
             throw this.constructRejectionError(qualifier);
