@@ -6,11 +6,11 @@
 Q: How to limit rate of firebase function calls?
 A: Use `firebase-functions-rate-limiter`
 
-Do you want to prevent excessive use of your firebase functions? Then this library is for you.
-
 Mission: **limit number of calls per specified period of time**
 
-**Key features:**
+
+
+## Key features:
 
 - Two backends: more efficient Realtime Database or Firestore for convenience?
 - Easy: call single function, no configuration
@@ -22,7 +22,7 @@ Mission: **limit number of calls per specified period of time**
 
 
 
-### Installation
+## Installation
 
 ```bash
 $ npm install --save firebase-functions-rate-limiter
