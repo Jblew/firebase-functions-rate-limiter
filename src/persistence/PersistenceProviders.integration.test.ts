@@ -20,7 +20,7 @@ function mock() {
     const firestore = app.firestore();
     const database = app.database();
     const provider: PersistenceProvider = undefined as any;
-    const emptyPersistenceRecord: PersistenceRecord = { usages: [] };
+    const emptyPersistenceRecord: PersistenceRecord = { u: [] };
     const nonModifyingUpdater = (pr: PersistenceRecord) => pr;
     return {
         app,
@@ -76,11 +76,11 @@ before("startup", async function() {
         });
 
         it("Resolves when transaction callback is finshed", async () => {
-            const { provider, uniqueCollectionName, uniqueDocName, emptyPersistenceRecord } = test.mockFactory();
+            const { provider, uniqueCollectionName, uniqueDocName } = test.mockFactory();
             const spy = sinon.spy();
             await provider.updateAndGet(uniqueCollectionName, uniqueDocName, record => {
                 spy();
-                return { usages: [] };
+                return { u: [] };
             });
             expect(spy.callCount).to.be.equal(1);
         });
@@ -88,7 +88,7 @@ before("startup", async function() {
         it("Returns empty record when no data", async () => {
             const { provider, uniqueCollectionName, uniqueDocName, nonModifyingUpdater } = test.mockFactory();
             const rec = await provider.updateAndGet(uniqueCollectionName, uniqueDocName, nonModifyingUpdater);
-            expect(rec.usages)
+            expect(rec.u)
                 .to.be.an("array")
                 .with.length(0);
         });
@@ -97,15 +97,15 @@ before("startup", async function() {
             const { provider, uniqueCollectionName, uniqueDocName, nonModifyingUpdater } = test.mockFactory();
 
             const recToBeSaved: PersistenceRecord = {
-                usages: [1, 2, 3],
+                u: [1, 2, 3],
             };
             await provider.updateAndGet(uniqueCollectionName, uniqueDocName, r => recToBeSaved);
 
             const recRetrived = await provider.updateAndGet(uniqueCollectionName, uniqueDocName, nonModifyingUpdater);
-            expect(recRetrived.usages)
+            expect(recRetrived.u)
                 .to.be.an("array")
-                .with.length(recToBeSaved.usages.length)
-                .that.have.members(recToBeSaved.usages);
+                .with.length(recToBeSaved.u.length)
+                .that.have.members(recToBeSaved.u);
         });
     }),
 );

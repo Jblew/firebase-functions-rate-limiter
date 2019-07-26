@@ -36,7 +36,7 @@ export class GenericRateLimiter {
         const resultHolder = {
             isQuotaExceeded: false,
         };
-        await this.persistenceProvider.updateAndGet(this.configuration.firebaseCollectionKey, qualifier, record => {
+        await this.persistenceProvider.updateAndGet(this.configuration.name, qualifier, record => {
             return this.runTransactionForAnswer(record, resultHolder);
         });
 
@@ -49,9 +49,9 @@ export class GenericRateLimiter {
     ): PersistenceRecord {
         const timestampsSeconds = this.getTimestampsSeconds();
 
-        this.debugFn("Got record with usages " + input.usages.length);
+        this.debugFn("Got record with usages " + input.u.length);
 
-        const recentUsages: number[] = this.selectRecentUsages(input.usages, timestampsSeconds.threshold);
+        const recentUsages: number[] = this.selectRecentUsages(input.u, timestampsSeconds.threshold);
         this.debugFn("Of these usages there are" + recentUsages.length + " usages that count into period");
 
         const result = this.isQuotaExceeded(recentUsages.length);
@@ -64,7 +64,7 @@ export class GenericRateLimiter {
         }
 
         const newRecord: PersistenceRecord = {
-            usages: recentUsages,
+            u: recentUsages,
         };
         return newRecord;
     }
@@ -81,7 +81,7 @@ export class GenericRateLimiter {
     }
 
     private isQuotaExceeded(numOfRecentUsages: number): boolean {
-        return numOfRecentUsages >= this.configuration.maxCallsPerPeriod;
+        return numOfRecentUsages >= this.configuration.maxCalls;
     }
 
     private getTimestampsSeconds(): { current: number; threshold: number } {

@@ -20,7 +20,7 @@ function mock(configApply: FirebaseFunctionsRateLimiterConfiguration) {
     const qualifier = uuid();
     const firestore = app.firestore();
     const config: FirebaseFunctionsRateLimiterConfiguration = {
-        firebaseCollectionKey: uniqueCollectionName,
+        name: uniqueCollectionName,
         ...configApply,
     };
     const rateLimiter = new FirebaseFunctionsRateLimiter(config, firestore);
@@ -62,14 +62,14 @@ describe("FirebaseFunctionsRateLimiter", () => {
                 .get();
 
             const record = doc.data() as PersistenceRecord;
-            expect(record.usages)
+            expect(record.u)
                 .to.be.an("array")
                 .with.length(1);
         });
 
         it("Increments counter when limit is not exceeded", async () => {
             const { rateLimiter, firestore, uniqueCollectionName, qualifier } = mock({
-                maxCallsPerPeriod: 10,
+                maxCalls: 10,
             });
 
             const noOfTestCalls = 5;
@@ -83,17 +83,17 @@ describe("FirebaseFunctionsRateLimiter", () => {
                 .doc(qualifier)
                 .get();
             const record = doc.data() as PersistenceRecord;
-            expect(record.usages)
+            expect(record.u)
                 .to.be.an("array")
                 .with.length(noOfTestCalls);
         });
 
         it("Does not increment counter when limit is exceeded", async () => {
-            const maxCallsPerPeriod = 5;
+            const maxCalls = 5;
             const noOfTestCalls = 10;
 
             const { rateLimiter, firestore, uniqueCollectionName, qualifier } = mock({
-                maxCallsPerPeriod,
+                maxCalls,
             });
 
             for (let i = 0; i < noOfTestCalls; i++) {
@@ -106,17 +106,17 @@ describe("FirebaseFunctionsRateLimiter", () => {
                 .doc(qualifier)
                 .get();
             const record = doc.data() as PersistenceRecord;
-            expect(record.usages)
+            expect(record.u)
                 .to.be.an("array")
-                .with.length(maxCallsPerPeriod);
+                .with.length(maxCalls);
         });
 
         it("Limit is exceeded if too much calls in specified period", async () => {
-            const maxCallsPerPeriod = 5;
+            const maxCalls = 5;
             const noOfTestCalls = 10;
 
             const { rateLimiter, qualifier } = mock({
-                maxCallsPerPeriod,
+                maxCalls,
             });
 
             for (let i = 0; i < noOfTestCalls; i++) {
@@ -130,11 +130,11 @@ describe("FirebaseFunctionsRateLimiter", () => {
         it("Limit is not exceeded if too much calls not in specified period", async function() {
             this.timeout(3000);
 
-            const maxCallsPerPeriod = 2;
+            const maxCalls = 2;
             const periodSeconds = 1;
 
             const { rateLimiter, qualifier } = mock({
-                maxCallsPerPeriod,
+                maxCalls,
                 periodSeconds,
             });
 
@@ -146,11 +146,11 @@ describe("FirebaseFunctionsRateLimiter", () => {
         it("Calls older than period are removed from the database", async function() {
             this.timeout(3000);
 
-            const maxCallsPerPeriod = 2;
+            const maxCalls = 2;
             const periodSeconds = 1;
 
             const { rateLimiter, qualifier, uniqueCollectionName, firestore } = mock({
-                maxCallsPerPeriod,
+                maxCalls,
                 periodSeconds,
             });
 
@@ -164,7 +164,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                 .doc(qualifier)
                 .get();
             const record = doc.data() as PersistenceRecord;
-            expect(record.usages)
+            expect(record.u)
                 .to.be.an("array")
                 .with.length(1);
         });
@@ -172,11 +172,11 @@ describe("FirebaseFunctionsRateLimiter", () => {
 
     describe("rejectIfQuotaExceededOrRecordCall", () => {
         it("throws functions.https.HttpsException when limit is exceeded", async () => {
-            const maxCallsPerPeriod = 1;
+            const maxCalls = 1;
             const noOfTestCalls = 2;
 
             const { rateLimiter, qualifier } = mock({
-                maxCallsPerPeriod,
+                maxCalls,
             });
 
             for (let i = 0; i < noOfTestCalls; i++) {

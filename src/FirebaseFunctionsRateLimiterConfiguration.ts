@@ -1,33 +1,33 @@
 import ow from "ow";
 
 export interface FirebaseFunctionsRateLimiterConfiguration {
-    firebaseCollectionKey?: string;
+    name?: string;
     periodSeconds?: number;
-    maxCallsPerPeriod?: number;
+    maxCalls?: number;
     debug?: boolean;
 }
 
 export namespace FirebaseFunctionsRateLimiterConfiguration {
-    export interface ConfigurationFull {
-        firebaseCollectionKey: string;
+    export interface ConfigurationFull extends FirebaseFunctionsRateLimiterConfiguration {
+        name: string;
         periodSeconds: number;
-        maxCallsPerPeriod: number;
+        maxCalls: number;
         debug: boolean;
     }
 
     export namespace ConfigurationFull {
-        export function validate(o: ConfigurationFull) {
-            ow(o.firebaseCollectionKey, "configuration.FirebaseFunctionsRateLimiter", ow.string.nonEmpty);
+        export function validate(o: ConfigurationFull & FirebaseFunctionsRateLimiterConfiguration) {
+            ow(o.name, "configuration.name", ow.string.nonEmpty);
             ow(o.periodSeconds, "configuration.periodSeconds", ow.number.integer.finite.greaterThan(0));
-            ow(o.maxCallsPerPeriod, "configuration.maxCallsPerPeriod", ow.number.integer.finite.greaterThan(0));
+            ow(o.maxCalls, "configuration.maxCalls", ow.number.integer.finite.greaterThan(0));
             ow(o.debug, "configuration.debug", ow.boolean);
         }
     }
 
     export const DEFAULT_CONFIGURATION: ConfigurationFull = {
-        firebaseCollectionKey: "rate_limiter_1",
+        name: "rlimit",
         periodSeconds: 5 * 60,
-        maxCallsPerPeriod: 1,
+        maxCalls: 5,
         debug: false,
     };
 }

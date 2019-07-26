@@ -69,7 +69,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
 
     private createEmptyRecord(): PersistenceRecord {
         return {
-            usages: [],
+            u: [],
         };
     }
 }
