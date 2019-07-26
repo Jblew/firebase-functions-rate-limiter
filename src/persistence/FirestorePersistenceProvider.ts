@@ -1,7 +1,7 @@
 import * as admin from "firebase-admin";
 import ow from "ow";
 
-import { FirestoreEquivalent } from "../FirestoreEquivalent";
+import { FirestoreEquivalent } from "../types/FirestoreEquivalent";
 
 import { PersistenceProvider } from "./PersistenceProvider";
 import { PersistenceRecord } from "./PersistenceRecord";
@@ -22,13 +22,29 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         this.debugFn = debugFn;
     }
 
-    public async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
+    public async updateAndGet(
+        collectionName: string,
+        recordName: string,
+        updaterFn: (record: PersistenceRecord) => PersistenceRecord,
+    ): Promise<PersistenceRecord> {
+        let result: PersistenceRecord | undefined;
+        await this.runTransaction(async () => {
+            const record = await this.getRecord(collectionName, recordName);
+            const updatedRecord = updaterFn(record);
+            await this.saveRecord(collectionName, recordName, updatedRecord);
+            result = updatedRecord;
+        });
+        if (!result) throw new Error("FirestorePersistenceProvider: Persistence record could not be updated");
+        return result;
+    }
+
+    private async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
         return await this.firestore.runTransaction(async (transaction: any) => {
             await asyncTransactionFn();
         });
     }
 
-    public async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
+    private async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
         const docSnapshot = await this.getDocumentRef(collectionName, recordName).get();
         this.debugFn("Got record from collection=" + collectionName + ", document=" + recordName);
 
@@ -39,7 +55,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         return record;
     }
 
-    public async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {
+    private async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {
         this.debugFn("Save record collection=" + collectionName + ", document=" + recordName);
         await this.getDocumentRef(collectionName, recordName).set(record);
     }

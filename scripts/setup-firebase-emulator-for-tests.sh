@@ -6,3 +6,4 @@ cd "${DIR}"
 
 npm i -g firebase firebase-tools
 firebase setup:emulators:firestore
+firebase setup:emulators:database

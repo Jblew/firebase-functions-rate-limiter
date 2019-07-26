@@ -6,17 +6,33 @@ import { PersistenceRecord } from "./PersistenceRecord";
 export class PersistenceProviderMock implements PersistenceProvider {
     public persistenceObject: { [x: string]: PersistenceRecord } = {};
 
-    public async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
+    public async updateAndGet(
+        collectionName: string,
+        recordName: string,
+        updaterFn: (record: PersistenceRecord) => PersistenceRecord,
+    ): Promise<PersistenceRecord> {
+        let result: PersistenceRecord | undefined;
+        await this.runTransaction(async () => {
+            const record = await this.getRecord(collectionName, recordName);
+            const updatedRecord = updaterFn(record);
+            await this.saveRecord(collectionName, recordName, updatedRecord);
+            result = updatedRecord;
+        });
+        if (!result) throw new Error("PersistenceProviderMock: Persistence record could not be updated");
+        return result;
+    }
+
+    private async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
         await asyncTransactionFn();
     }
 
-    public async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
+    private async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
         await BluebirdPromise.delay(2);
         const key = this.getKey(collectionName, recordName);
         return this.persistenceObject[key] || this.createEmptyRecord();
     }
 
-    public async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {
+    private async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {
         await BluebirdPromise.delay(2);
         const key = this.getKey(collectionName, recordName);
         this.persistenceObject[key] = record;

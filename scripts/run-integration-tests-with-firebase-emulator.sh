@@ -6,4 +6,4 @@ cd "${DIR}"
 
 echo "Begin tests in ${DIR}"
 
-firebase emulators:exec --only firestore "npm run do_verify"
+firebase emulators:exec --only firestore,database "npm run do_verify"

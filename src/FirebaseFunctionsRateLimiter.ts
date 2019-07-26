@@ -4,10 +4,10 @@ import * as functions from "firebase-functions";
 import ow from "ow";
 
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
-import { FirestoreEquivalent } from "./FirestoreEquivalent";
 import { GenericRateLimiter } from "./GenericRateLimiter";
 import { FirestorePersistenceProvider } from "./persistence/FirestorePersistenceProvider";
 import { FirebaseTimestampProvider } from "./timestamp/FirebaseTimestampProvider";
+import { FirestoreEquivalent } from "./types/FirestoreEquivalent";
 
 export class FirebaseFunctionsRateLimiter {
     private configurationFull: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull;

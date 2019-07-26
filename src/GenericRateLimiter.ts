@@ -33,27 +33,29 @@ export class GenericRateLimiter {
     }
 
     public async isQuotaExceededOrRecordCall(qualifier: string): Promise<boolean> {
-        const result = {
+        const resultHolder = {
             isQuotaExceeded: false,
         };
-        await this.persistenceProvider.runTransaction(async () => {
-            result.isQuotaExceeded = await this.firebaseCheckInTransaction(qualifier);
+        await this.persistenceProvider.updateAndGet(this.configuration.firebaseCollectionKey, qualifier, record => {
+            return this.runTransactionForAnswer(record, resultHolder);
         });
-        return result.isQuotaExceeded;
+
+        return resultHolder.isQuotaExceeded;
     }
 
-    private async firebaseCheckInTransaction(qualifier: string): Promise<boolean> {
+    private runTransactionForAnswer(
+        input: PersistenceRecord,
+        resultHolder: { isQuotaExceeded: boolean },
+    ): PersistenceRecord {
         const timestampsSeconds = this.getTimestampsSeconds();
 
-        this.debugFn("Loading persistence record for qualifier '" + qualifier + "' at " + timestampsSeconds.current);
+        this.debugFn("Got record with usages " + input.usages.length);
 
-        const record = await this.getRecord(qualifier);
-        this.debugFn("Got record with usages " + record.usages.length);
-
-        const recentUsages: number[] = this.selectRecentUsages(record.usages, timestampsSeconds.threshold);
+        const recentUsages: number[] = this.selectRecentUsages(input.usages, timestampsSeconds.threshold);
         this.debugFn("Of these usages there are" + recentUsages.length + " usages that count into period");
 
         const result = this.isQuotaExceeded(recentUsages.length);
+        resultHolder.isQuotaExceeded = result;
         this.debugFn("The result is quotaExceeded=" + result);
 
         if (!result) {
@@ -64,13 +66,7 @@ export class GenericRateLimiter {
         const newRecord: PersistenceRecord = {
             usages: recentUsages,
         };
-        if (this.hasRecordChanged(record, newRecord)) {
-            this.debugFn("Record has changed. Saving");
-            await this.saveRecord(qualifier, newRecord);
-        } else {
-            this.debugFn("Record has not hanged. No need to save");
-        }
-        return result;
+        return newRecord;
     }
 
     private selectRecentUsages(allUsages: number[], timestampThresholdSeconds: number): number[] {
@@ -94,26 +90,5 @@ export class GenericRateLimiter {
             current: currentServerTimestampSeconds,
             threshold: currentServerTimestampSeconds - this.configuration.periodSeconds,
         };
-    }
-
-    private hasRecordChanged(oldRecord: PersistenceRecord, newRecord: PersistenceRecord): boolean {
-        if (oldRecord.usages.length !== newRecord.usages.length) {
-            return true;
-        } else {
-            const a1 = oldRecord.usages.concat().sort();
-            const a2 = newRecord.usages.concat().sort();
-            for (let i = 0; i < a1.length; i++) {
-                if (a1[i] !== a2[i]) return true;
-            }
-            return false;
-        }
-    }
-
-    private async getRecord(qualifier: string): Promise<PersistenceRecord> {
-        return this.persistenceProvider.getRecord(this.configuration.firebaseCollectionKey, qualifier);
-    }
-
-    private async saveRecord(qualifier: string, record: PersistenceRecord): Promise<void> {
-        return this.persistenceProvider.saveRecord(this.configuration.firebaseCollectionKey, qualifier, record);
     }
 }
