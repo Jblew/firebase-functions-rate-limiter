@@ -50,7 +50,7 @@ import { FirebaseFunctionsRateLimiter } from "firebase-functions-rate-limiter";
 admin.initializeApp(functions.config().firebase);
 const database = admin.database();
 
-const limiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
+const limiter = FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
     {
         name: "rate_limiter_collection",
         maxCalls: 2,
@@ -80,7 +80,7 @@ import { FirebaseFunctionsRateLimiter } from "firebase-functions-rate-limiter";
 admin.initializeApp(functions.config().firebase);
 const database = admin.database();
 
-const perUserlimiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
+const perUserlimiter = FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
     {
         name: "per_user_limiter",
         maxCalls: 2,
@@ -125,7 +125,7 @@ const database = admin.database();
 **#2** Create limiter object outside of the function scope and pass the configuration and Database object. Configuration options are listed below.
 
 ```typescript
-const someLimiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
+const someLimiter = FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
     {
         name: "limiter_some",
         maxCalls: 10,
@@ -178,9 +178,9 @@ const configuration = {
 #### Choose backend:
 
 ```typescript
-const limiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(configuration, database)
+const limiter = FirebaseFunctionsRateLimiter.withRealtimeDbBackend(configuration, database)
 // or
-const limiter = new FirebaseFunctionsRateLimiter.withFirestoreBackend(configuration, firestore)
+const limiter = FirebaseFunctionsRateLimiter.withFirestoreBackend(configuration, firestore)
 ```
 
 
