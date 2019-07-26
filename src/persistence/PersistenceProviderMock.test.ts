@@ -22,6 +22,10 @@ export class PersistenceProviderMock implements PersistenceProvider {
         return result;
     }
 
+    public setDebugFn(debugFn: (msg: string) => void) {
+        //
+    }
+
     private async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
         await asyncTransactionFn();
     }

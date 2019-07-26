@@ -6,13 +6,10 @@ import * as chaiAsPromised from "chai-as-promised";
 import * as functions from "firebase-functions";
 import * as _ from "lodash";
 import "mocha";
-import * as uuid from "uuid/v4";
 
 import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
-import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
-import { PersistenceRecord } from "./persistence/PersistenceRecord";
-
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
+import { PersistenceRecord } from "./persistence/PersistenceRecord";
 
 //
 chaiUse(chaiAsPromised);
