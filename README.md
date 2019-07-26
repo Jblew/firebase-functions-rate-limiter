@@ -3,17 +3,20 @@
 
 
 
+Q: How to limit rate of firebase function calls?
+A: Use `firebase-functions-rate-limiter`
+
 Do you want to prevent excessive use of your firebase functions? Then this library is for you.
 
 Mission: **limit number of calls per specified period of time**
 
 **Key features:**
 
-- Limit number 
-- Batteries included: firestore as a backend
+- Two backends: more efficient Realtime Database or Firestore for convenience?
 - Easy: call single function, no configuration
-- Efficient: only a single call read call to firestore, two calls if limit not exceeded and usage is recorded
-- Clean: Uses only one collection (configurable), creates single document for each qualifier. Does not leave rubbish in your firestore.
+- Efficient: only a single call read call to database (or firestore), two calls if limit not exceeded and usage is recorded
+- Concurrent-safe: uses atomis transactions in both backends
+- Clean: Uses only one key (or collection in firestore backend), creates single document for each qualifier. Does not leave rubbish in your database.
 - Typescript typings included
 - No firebase configuration required. You do not have to create any indexes or rules.
 
@@ -29,9 +32,7 @@ Then:
 
 ```typescript
 import FirebaseFunctionsRateLimiter from "firebase-functions-rate-limiter";
-
 // or
-
 const FirebaseFunctionsRateLimiter = require("firebase-functions-rate-limiter");
 ```
 
@@ -47,15 +48,15 @@ import * as functions from "firebase-functions";
 import { FirebaseFunctionsRateLimiter } from "firebase-functions-rate-limiter";
 
 admin.initializeApp(functions.config().firebase);
-const firestoreDB = admin.firestore();
+const database = admin.database();
 
-const limiter = new FirebaseFunctionsRateLimiter(
+const limiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
     {
-        firebaseCollectionKey: "rate_limiter_collection",
-        maxCallsPerPeriod: 2,
+        name: "rate_limiter_collection",
+        maxCalls: 2,
         periodSeconds: 15,
     },
-    firestoreDB,
+    database,
 );
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
@@ -77,15 +78,15 @@ import * as functions from "firebase-functions";
 import { FirebaseFunctionsRateLimiter } from "firebase-functions-rate-limiter";
 
 admin.initializeApp(functions.config().firebase);
-const firestoreDB = admin.firestore();
+const database = admin.database();
 
-const perUserlimiter = new FirebaseFunctionsRateLimiter(
+const perUserlimiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
     {
-        firebaseCollectionKey: "per_user_limiter",
-        maxCallsPerPeriod: 2,
+        name: "per_user_limiter",
+        maxCalls: 2,
         periodSeconds: 15,
     },
-    firestoreDB,
+    database,
 );
 
 exports.authenticatedFunction = 
@@ -114,23 +115,23 @@ exports.authenticatedFunction =
 
 ### Step-by-step
 
-**#1** Initialize admin app and get Firestore object
+**#1** Initialize admin app and get Realtime database object
 
 ```typescript
 admin.initializeApp(functions.config().firebase);
-const firestoreDB = admin.firestore();
+const database = admin.database();
 ```
 
-**#2** Create limiter object outside of the function scope and pass the configuration and Firestore object. Configuration options are listed below.
+**#2** Create limiter object outside of the function scope and pass the configuration and Database object. Configuration options are listed below.
 
 ```typescript
-const someLimiter = new FirebaseFunctionsRateLimiter(
+const someLimiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
     {
-        firebaseCollectionKey: "limiter_some",
-        maxCallsPerPeriod: 10,
+        name: "limiter_some",
+        maxCalls: 10,
         periodSeconds: 60,
     },
-    firestoreDB,
+    database,
 );
 ```
 
@@ -167,12 +168,22 @@ exports.testRateLimiter =
 
 ```typescript
 const configuration = {
-  firebaseCollectionKey: // a collection with this name will be created
+  name: // a collection with this name will be created
   periodSeconds: // the length of test period in seconds
-  maxCallsPerPeriod: // number of maximum allowed calls in the period
+  maxCalls: // number of maximum allowed calls in the period
   debug: // boolean (default false)
 };
 ```
+
+#### Choose backend:
+
+```typescript
+const limiter = new FirebaseFunctionsRateLimiter.withRealtimeDbBackend(configuration, database)
+// or
+const limiter = new FirebaseFunctionsRateLimiter.withFirestoreBackend(configuration, firestore)
+```
+
+
 
 
 
