@@ -7,7 +7,6 @@ import * as functions from "firebase-functions";
 import * as _ from "lodash";
 import "mocha";
 
-import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
 
