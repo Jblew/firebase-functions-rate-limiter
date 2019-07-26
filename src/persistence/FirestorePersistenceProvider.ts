@@ -40,6 +40,10 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         return result;
     }
 
+    public setDebugFn(debugFn: (msg: string) => void) {
+        this.debugFn = debugFn;
+    }
+
     private async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
         return await this.firestore.runTransaction(async (transaction: any) => {
             await asyncTransactionFn();

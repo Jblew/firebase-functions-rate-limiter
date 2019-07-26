@@ -27,7 +27,9 @@ export class RealtimeDbPersistenceProvider implements PersistenceProvider {
         recordName: string,
         updaterFn: (record: PersistenceRecord) => PersistenceRecord,
     ): Promise<PersistenceRecord> {
-        const ref = this.database.ref(`${collectionName}/${recordName}`);
+        const refName = `${collectionName}/${recordName}`;
+
+        const ref = this.database.ref(refName);
         const response = await ref.transaction(dataToUpdate => this.wrapUpdaterFn(updaterFn)(dataToUpdate));
         const { snapshot, committed } = response;
         if (!snapshot) throw new Error("RealtimeDbPersistenceProvider: realtime db didn't respond with data");
@@ -36,6 +38,10 @@ export class RealtimeDbPersistenceProvider implements PersistenceProvider {
         const data = snapshot.val();
         if (data === null) return this.createEmptyRecord();
         else return data as PersistenceRecord;
+    }
+
+    public setDebugFn(debugFn: (msg: string) => void) {
+        this.debugFn = debugFn;
     }
 
     private wrapUpdaterFn(updaterFn: (record: PersistenceRecord) => PersistenceRecord): (data: any) => any {

@@ -6,4 +6,5 @@ export interface PersistenceProvider {
         recordName: string,
         updater: (record: PersistenceRecord) => PersistenceRecord,
     ): Promise<PersistenceRecord>;
+    setDebugFn(debugFn: (msg: string) => void): void;
 }
