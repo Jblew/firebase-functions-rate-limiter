@@ -12,7 +12,6 @@
     "/src",
     "package-lock.js"
   ],
-
   "scripts": {
     "check": "if echo \"$(node --version)\" | grep -q \"$(cat .nvmrc)\"; then echo \"Node version correct\"; else echo \"Node version does not match that in .nvmrc\" && exit 1; fi",
     "build:cleanbefore": "rm -rf dist",
@@ -28,14 +27,14 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "firebase-admin": "^8.2.0",
-    "firebase-functions": "^3.1.0",
+    "firebase-admin": "^8.3.0",
+    "firebase-functions": "^3.2.0",
     "ow": "^0.13.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
-    "@firebase/testing": "^0.11.5",
+    "@firebase/testing": "^0.11.8",
     "@types/bluebird": "^3.5.27",
     "@types/chai": "4.1.7",
     "@types/chai-as-promised": "7.1.0",
