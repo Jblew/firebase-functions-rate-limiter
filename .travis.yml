@@ -25,4 +25,4 @@ deploy:
       node_js: 8
       on:
           tags: false
-          all_branches: true
+          branch: master
