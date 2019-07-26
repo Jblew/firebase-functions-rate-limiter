@@ -31,7 +31,9 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         await this.runTransaction(async () => {
             const record = await this.getRecord(collectionName, recordName);
             const updatedRecord = updaterFn(record);
-            await this.saveRecord(collectionName, recordName, updatedRecord);
+            if (this.hasRecordChanged(record, updatedRecord)) {
+                await this.saveRecord(collectionName, recordName, updatedRecord);
+            }
             result = updatedRecord;
         });
         if (!result) throw new Error("FirestorePersistenceProvider: Persistence record could not be updated");
@@ -71,5 +73,18 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         return {
             u: [],
         };
+    }
+
+    private hasRecordChanged(oldRecord: PersistenceRecord, newRecord: PersistenceRecord): boolean {
+        if (oldRecord.u.length !== newRecord.u.length) {
+            return true;
+        } else {
+            const a1 = oldRecord.u.concat().sort();
+            const a2 = newRecord.u.concat().sort();
+            for (let i = 0; i < a1.length; i++) {
+                if (a1[i] !== a2[i]) return true;
+            }
+            return false;
+        }
     }
 }
