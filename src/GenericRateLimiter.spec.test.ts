@@ -7,7 +7,7 @@ import { SinonSpy, spy } from "sinon";
 
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 import { GenericRateLimiter } from "./GenericRateLimiter";
-import { PersistenceProviderMock } from "./persistence/PersistenceProviderMock.test";
+import { PersistenceProviderMock } from "./persistence/PersistenceProviderMock";
 import { TimestampProviderMock } from "./timestamp/TimestampProviderMock.test";
 
 chaiUse(chaiAsPromised);

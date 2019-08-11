@@ -26,14 +26,14 @@ export class PersistenceProviderMock implements PersistenceProvider {
         //
     }
 
-    private async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
-        await asyncTransactionFn();
-    }
-
-    private async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
+    public async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
         await BluebirdPromise.delay(2);
         const key = this.getKey(collectionName, recordName);
         return this.persistenceObject[key] || this.createEmptyRecord();
+    }
+
+    private async runTransaction(asyncTransactionFn: () => Promise<void>): Promise<void> {
+        await asyncTransactionFn();
     }
 
     private async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {

@@ -34,12 +34,12 @@ afterEach(async () => {
 
 //
 describe("FirebaseFunctionsRateLimiter", () => {
-    const backends: Array<"firestore" | "realtimedb"> = ["firestore", "realtimedb"];
-    backends.forEach((backend: "firestore" | "realtimedb") =>
+    const backends: Array<"firestore" | "realtimedb" | "mock"> = ["firestore", "realtimedb", "mock"];
+    backends.forEach((backend: "firestore" | "realtimedb" | "mock") =>
         describe("Backend " + backend, () => {
             describe("isQuotaExceeded", () => {
                 it("Uses qualifier to identify document in the collection", async () => {
-                    const { rateLimiter, uniqueCollectionName, qualifier, getDocument } = mock("firestore", {});
+                    const { rateLimiter, uniqueCollectionName, qualifier, getDocument } = mock(backend, {});
                     await rateLimiter.isQuotaExceeded(qualifier);
 
                     const doc = await getDocument(uniqueCollectionName, qualifier);
@@ -51,7 +51,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                 });
 
                 it("Increments counter when limit is not exceeded", async () => {
-                    const { rateLimiter, getDocument, uniqueCollectionName, qualifier } = mock("firestore", {
+                    const { rateLimiter, getDocument, uniqueCollectionName, qualifier } = mock(backend, {
                         maxCalls: 10,
                     });
 

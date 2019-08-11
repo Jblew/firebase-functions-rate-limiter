@@ -7,6 +7,7 @@ import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRa
 import { GenericRateLimiter } from "./GenericRateLimiter";
 import { FirestorePersistenceProvider } from "./persistence/FirestorePersistenceProvider";
 import { PersistenceProvider } from "./persistence/PersistenceProvider";
+import { PersistenceProviderMock } from "./persistence/PersistenceProviderMock";
 import { RealtimeDbPersistenceProvider } from "./persistence/RealtimeDbPersistenceProvider";
 import { FirebaseTimestampProvider } from "./timestamp/FirebaseTimestampProvider";
 import { FirestoreEquivalent } from "./types/FirestoreEquivalent";
@@ -27,6 +28,18 @@ export class FirebaseFunctionsRateLimiter {
     ): FirebaseFunctionsRateLimiter {
         const provider = new RealtimeDbPersistenceProvider(realtimeDb);
         return new FirebaseFunctionsRateLimiter(configuration, provider);
+    }
+
+    public static mock(
+        configuration?: FirebaseFunctionsRateLimiterConfiguration,
+        persistenceProviderMock?: PersistenceProviderMock,
+    ): FirebaseFunctionsRateLimiter {
+        const defaultConfig: FirebaseFunctionsRateLimiterConfiguration = {
+            periodSeconds: 10,
+            maxCalls: Number.MAX_SAFE_INTEGER,
+        };
+        const provider = persistenceProviderMock || new PersistenceProviderMock();
+        return new FirebaseFunctionsRateLimiter(configuration || defaultConfig, provider);
     }
 
     private configurationFull: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull;
