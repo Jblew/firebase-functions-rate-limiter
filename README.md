@@ -19,7 +19,7 @@ Mission: **limit number of calls per specified period of time**
 - Clean: Uses only one key (or collection in firestore backend), creates single document for each qualifier. Does not leave rubbish in your database.
 - Typescript typings included
 - No firebase configuration required. You do not have to create any indexes or rules.
-
+- .mock() factory to make functions testing easier
 
 
 ## Installation
@@ -181,6 +181,8 @@ const configuration = {
 const limiter = FirebaseFunctionsRateLimiter.withRealtimeDbBackend(configuration, database)
 // or
 const limiter = FirebaseFunctionsRateLimiter.withFirestoreBackend(configuration, firestore)
+// or, for functions unit testing convenience:
+const limiter = FirebaseFunctionsRateLimiter.mock()
 ```
 
 
