@@ -1,5 +1,3 @@
-import * as BluebirdPromise from "bluebird";
-
 import { PersistenceProvider } from "./PersistenceProvider";
 import { PersistenceRecord } from "./PersistenceRecord";
 
@@ -27,7 +25,7 @@ export class PersistenceProviderMock implements PersistenceProvider {
     }
 
     public async getRecord(collectionName: string, recordName: string): Promise<PersistenceRecord> {
-        await BluebirdPromise.delay(2);
+        await this.delay(2);
         const key = this.getKey(collectionName, recordName);
         return this.persistenceObject[key] || this.createEmptyRecord();
     }
@@ -37,7 +35,7 @@ export class PersistenceProviderMock implements PersistenceProvider {
     }
 
     private async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {
-        await BluebirdPromise.delay(2);
+        await this.delay(2);
         const key = this.getKey(collectionName, recordName);
         this.persistenceObject[key] = record;
     }
@@ -50,5 +48,13 @@ export class PersistenceProviderMock implements PersistenceProvider {
         return {
             u: [],
         };
+    }
+
+    private delay(delayMs: number) {
+        return new Promise(function(resolve, reject) {
+            setTimeout(function() {
+                resolve();
+            }, delayMs);
+        });
     }
 }
