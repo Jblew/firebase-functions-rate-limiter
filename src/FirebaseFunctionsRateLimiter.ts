@@ -134,6 +134,17 @@ export class FirebaseFunctionsRateLimiter {
         }
     }
 
+    /**
+     * Checks if quota is exceeded. If not — DOES NOT RECORD USAGE. It only checks if limit was
+     * previously exceeded or not.
+     * @param qualifier — a string that identifies the limited resource accessor (for example the user id)
+     */
+    public async isQuotaAlreadyExceeded(qualifier?: string): Promise<boolean> {
+        return await this.genericRateLimiter.isQuotaAlreadyExceededDoNotRecordCall(
+            qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+        );
+    }
+
     /*
      * Private methods
      */
