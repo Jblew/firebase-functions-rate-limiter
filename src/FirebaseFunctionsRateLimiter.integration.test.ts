@@ -1,19 +1,12 @@
 /* tslint:disable:max-classes-per-file no-console */
 import * as firebase from "@firebase/testing";
 import * as BluebirdPromise from "bluebird";
-import { expect, use as chaiUse } from "chai";
-import * as chaiAsPromised from "chai-as-promised";
 import * as functions from "firebase-functions";
-import * as _ from "lodash";
-import "mocha";
 
+import { _, expect } from "./_test/test_environment";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
 
-//
-chaiUse(chaiAsPromised);
-
-//
 before("startup", async function() {
     this.timeout(4000);
     const { firestore, database } = mock("firestore", {});

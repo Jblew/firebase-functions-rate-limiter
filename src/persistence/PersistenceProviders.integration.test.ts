@@ -1,11 +1,7 @@
 /* tslint:disable:max-classes-per-file */
 import * as firebase from "@firebase/testing";
-import { expect, use as chaiUse } from "chai";
-import * as chaiAsPromised from "chai-as-promised";
-import * as _ from "lodash";
-import "mocha";
-import * as sinon from "sinon";
-import * as uuid from "uuid/v4";
+
+import { _, expect, sinon, uuid } from "../_test/test_environment";
 
 import { FirestorePersistenceProvider } from "./FirestorePersistenceProvider";
 import { PersistenceProvider } from "./PersistenceProvider";

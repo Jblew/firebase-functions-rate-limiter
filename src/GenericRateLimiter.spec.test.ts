@@ -1,16 +1,10 @@
 /* tslint:disable:max-classes-per-file */
-import { expect, use as chaiUse } from "chai";
-import * as chaiAsPromised from "chai-as-promised";
-import * as _ from "lodash";
-import "mocha";
-import { SinonSpy, spy } from "sinon";
 
+import { _, expect, sinon } from "./_test/test_environment";
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 import { GenericRateLimiter } from "./GenericRateLimiter";
 import { PersistenceProviderMock } from "./persistence/PersistenceProviderMock";
 import { TimestampProviderMock } from "./timestamp/TimestampProviderMock.test";
-
-chaiUse(chaiAsPromised);
 
 const sampleConfiguration: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull = {
     name: "rate_limiter_1",
@@ -48,13 +42,14 @@ describe("GenericRateLimiter", () => {
 
         it("calls updateAndGet", async () => {
             const { genericRateLimiter, persistenceProviderMock } = mock({});
-            persistenceProviderMock.updateAndGet = spy(persistenceProviderMock.updateAndGet);
+            persistenceProviderMock.updateAndGet = sinon.spy(persistenceProviderMock.updateAndGet);
 
             await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
 
-            expect((persistenceProviderMock.updateAndGet as SinonSpy).callCount, "updateAndGet call count").to.be.equal(
-                1,
-            );
+            expect(
+                (persistenceProviderMock.updateAndGet as sinon.SinonSpy).callCount,
+                "updateAndGet call count",
+            ).to.be.equal(1);
         });
 
         it("puts new current timestamp when quota was not exceeded", async () => {
