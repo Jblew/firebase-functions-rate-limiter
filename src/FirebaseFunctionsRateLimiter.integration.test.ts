@@ -4,9 +4,9 @@ import * as BluebirdPromise from "bluebird";
 import * as functions from "firebase-functions";
 
 import { _, expect } from "./_test/test_environment";
+import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
-import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 
 describe("FirebaseFunctionsRateLimiter", () => {
     //
