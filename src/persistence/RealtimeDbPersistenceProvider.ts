@@ -41,7 +41,6 @@ export class RealtimeDbPersistenceProvider implements PersistenceProvider {
 
     public async get(collectionName: string, recordName: string): Promise<PersistenceRecord> {
         const snapshot = await this.getDatabaseRef(collectionName, recordName).once("value");
-        if (!snapshot) return this.createEmptyRecord();
 
         const data = snapshot.val();
         if (data === null) return this.createEmptyRecord();
