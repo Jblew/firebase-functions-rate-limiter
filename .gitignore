@@ -1,5 +1,7 @@
 /dist
 /.DS_Store
+/database-debug.log
+/firestore-debug.log
 
 # Logs
 logs
