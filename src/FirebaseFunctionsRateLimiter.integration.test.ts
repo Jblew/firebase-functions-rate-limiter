@@ -6,6 +6,7 @@ import * as functions from "firebase-functions";
 import { _, expect } from "./_test/test_environment";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
+import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 
 describe("FirebaseFunctionsRateLimiter", () => {
     //
@@ -84,38 +85,6 @@ describe("FirebaseFunctionsRateLimiter", () => {
                         .with.length(maxCalls);
                 });
 
-                it("Limit is exceeded if too much calls in specified period", async () => {
-                    const maxCalls = 5;
-                    const noOfTestCalls = 10;
-
-                    const { rateLimiter, qualifier } = mock(backend, {
-                        maxCalls,
-                    });
-
-                    for (let i = 0; i < noOfTestCalls; i++) {
-                        await BluebirdPromise.delay(5);
-                        await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                    }
-
-                    expect(await rateLimiter.isQuotaExceededOrRecordUsage(qualifier)).to.be.equal(true);
-                });
-
-                it("Limit is not exceeded if too much calls not in specified period", async function() {
-                    this.timeout(3000);
-
-                    const maxCalls = 2;
-                    const periodSeconds = 1;
-
-                    const { rateLimiter, qualifier } = mock(backend, {
-                        maxCalls,
-                        periodSeconds,
-                    });
-
-                    await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                    await BluebirdPromise.delay(periodSeconds * 1000 + 200);
-                    expect(await rateLimiter.isQuotaExceededOrRecordUsage(qualifier)).to.be.equal(false);
-                });
-
                 it("Calls older than period are removed from the database", async function() {
                     this.timeout(3000);
 
@@ -159,6 +128,58 @@ describe("FirebaseFunctionsRateLimiter", () => {
                     ).to.eventually.be.rejectedWith(functions.https.HttpsError);
                 });
             });
+
+            [
+                {
+                    name: "isQuotaExceededOrRecordUsage",
+                    methodFactory(rateLimiter: FirebaseFunctionsRateLimiter) {
+                        return rateLimiter.isQuotaExceededOrRecordUsage.bind(rateLimiter);
+                    },
+                },
+                {
+                    name: "isQuotaAlreadyExceeded",
+                    methodFactory(rateLimiter: FirebaseFunctionsRateLimiter) {
+                        return rateLimiter.isQuotaAlreadyExceeded.bind(rateLimiter);
+                    },
+                },
+            ].forEach(testedMethod =>
+                describe(`#${testedMethod.name}`, () => {
+                    it("Limit is exceeded if too much calls in specified period", async () => {
+                        const maxCalls = 5;
+                        const noOfTestCalls = 10;
+
+                        const { rateLimiter, qualifier } = mock(backend, {
+                            maxCalls,
+                        });
+
+                        for (let i = 0; i < noOfTestCalls; i++) {
+                            await BluebirdPromise.delay(5);
+                            await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                        }
+
+                        const method = testedMethod.methodFactory(rateLimiter);
+                        expect(await method(qualifier)).to.be.equal(true);
+                    });
+
+                    it("Limit is not exceeded if too much calls not in specified period", async function() {
+                        this.timeout(3000);
+
+                        const maxCalls = 2;
+                        const periodSeconds = 1;
+
+                        const { rateLimiter, qualifier } = mock(backend, {
+                            maxCalls,
+                            periodSeconds,
+                        });
+
+                        await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                        await BluebirdPromise.delay(periodSeconds * 1000 + 200);
+
+                        const method = testedMethod.methodFactory(rateLimiter);
+                        expect(await method(qualifier)).to.be.equal(false);
+                    });
+                }),
+            );
         }),
     );
 
