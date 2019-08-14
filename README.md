@@ -60,14 +60,14 @@ const limiter = FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
 );
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
-    await limiter.rejectOnQuotaExceeded(); // will throw HttpsException with proper warning
+    await limiter.rejectOnQuotaExceededOrRecordUsage(); // will throw HttpsException with proper warning
 
     res.send("Function called");
 });
 
 ```
 
->  You can use two functions: `limiter.rejectOnQuotaExceeded(qualifier?)` will throw an *functions.https.HttpsException* when limit is exceeded while `limiter.isQuotaExceeded(qualifier?)` gives you the ability to choose how to handle the situation.
+>  You can use two functions: `limiter.rejectOnQuotaExceededOrRecordUsage(qualifier?)` will throw an *functions.https.HttpsException* when limit is exceeded while `limiter.isQuotaExceededOrRecordUsage(qualifier?)` gives you the ability to choose how to handle the situation.
 
 
 **Example 2**: limit calls for each user separately (function called directly - please refer [firebase docs on this topic](https://firebase.google.com/docs/functions/callable)):
@@ -98,7 +98,7 @@ exports.authenticatedFunction =
         );
     }
     const uidQualifier = "u_" + context.auth.uid;
-    const isQuotaExceeded = await perUserlimiter.isQuotaExceeded(uidQualifier);
+    const isQuotaExceeded = await perUserlimiter.isQuotaExceededOrRecordUsage(uidQualifier);
     if (isQuotaExceeded) {
         throw new functions.https.HttpsError(
             "failed-precondition",
@@ -135,12 +135,12 @@ const someLimiter = FirebaseFunctionsRateLimiter.withRealtimeDbBackend(
 );
 ```
 
-**#3** Inside the function call isQuotaExceeded. This is an async function so not forget about **await**! The function will check if the limit was exceeded. If limit was not exceeded it will record this usage and return true. Otherwise, write will be only called if there are usage records that are older than the specified period and are about to being cleared.
+**#3** Inside the function call isQuotaExceededOrRecordUsage. This is an async function so not forget about **await**! The function will check if the limit was exceeded. If limit was not exceeded it will record this usage and return true. Otherwise, write will be only called if there are usage records that are older than the specified period and are about to being cleared.
 
 ```typescript
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
-    const quotaExceeded = await limiter.isQuotaExceeded();
+    const quotaExceeded = await limiter.isQuotaExceededOrRecordUsage();
     if (quotaExceeded) {
     	// respond with error
     } else {
@@ -154,7 +154,7 @@ exports.testRateLimiter =
 exports.testRateLimiter = 
   functions.https.onRequest(async (req, res) => {
     const qualifier = "user_1";
-    const quotaExceeded = await limiter.isQuotaExceeded(qualifier);
+    const quotaExceeded = await limiter.isQuotaExceededOrRecordUsage(qualifier);
     if (quotaExceeded) {
     	// respond with error
     } else {
@@ -186,6 +186,24 @@ const limiter = FirebaseFunctionsRateLimiter.mock()
 ```
 
 
+
+## Methods
+
+- `isQuotaExceededOrRecordUsage(qualifier?: string)` — Checks if quota was exceed. If not — it records the call time in the appropriate backend.
+
+- `rejectOnQuotaExceededOrRecordUsage(qualifier?: string)` — Checks if quota was exceed. If not — it records the call time in the appropriate backend and is rejected with *functions.https.HttpsException*. This particular exception can be caught when calling the firebase function directly (see https://firebase.google.com/docs/functions/callable).
+
+- `isQuotaAlreadyExceeded(qualifier?: string)` — Checks if quota was exceed, but does not record a usage. If you use this, you must call isQuotaExceededOrRecordUsage() to record the usage.
+
+  
+
+- ~~`isQuotaExceeded(qualifier?: string)`~~ — **deprecated**: renamed to isQuotaExceededOrRecordUsage
+
+- ~~`rejectOnQuotaExceeded(qualifier?: string)`~~ — **deprecated**: renamed to rejectOnQuotaExceededOrRecordUsage
+
+
+
+Why is there no `recordUsage()` method?** This library uses a document-per-qualifier data model which requires a read call before the update call. Read-and-update is performed inside an atomic transaction in both backend. It would not be concurrency-safe if the read-and-update transaction was split into separate calls.
 
 
 
