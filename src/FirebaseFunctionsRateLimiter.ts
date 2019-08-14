@@ -110,12 +110,7 @@ export class FirebaseFunctionsRateLimiter {
      * @deprecated
      */
     public async rejectOnQuotaExceeded(qualifier?: string): Promise<void> {
-        const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(
-            qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
-        );
-        if (isExceeded) {
-            throw this.constructRejectionError(qualifier);
-        }
+        await this.rejectOnQuotaExceededOrRecordUsage(qualifier);
     }
 
     /**
