@@ -1,8 +1,17 @@
 {
-	"folders": [
-		{
-			"path": ".."
-		}
-	],
-	"settings": {}
+	"folders": [{
+		"path": ".."
+	}],
+	"settings": {
+		"editor.rulers": [
+			110,
+			120
+		],
+		"git.ignoreLimitWarning": true,
+		"prettier.semi": true,
+		"prettier.singleQuote": false,
+		"prettier.trailingComma": "all",
+		"prettier.printWidth": 120,
+		"prettier.tabWidth": 4,
+	}
 }
