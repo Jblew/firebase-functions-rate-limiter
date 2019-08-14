@@ -3,7 +3,7 @@ import * as firebase from "@firebase/testing";
 import * as BluebirdPromise from "bluebird";
 import * as functions from "firebase-functions";
 
-import { _, expect } from "./_test/test_environment";
+import { _, expect, uuid } from "./_test/test_environment";
 import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
@@ -28,178 +28,232 @@ describe("FirebaseFunctionsRateLimiter", () => {
         }
     });
 
-    //
-    const backends: Array<"firestore" | "realtimedb" | "mock"> = ["firestore", "realtimedb", "mock"];
-    backends.forEach((backend: "firestore" | "realtimedb" | "mock") =>
-        describe("Backend " + backend, () => {
-            describe("isQuotaExceededOrRecordUsage", () => {
-                it("Uses qualifier to identify document in the collection", async () => {
-                    const { rateLimiter, uniqueCollectionName, qualifier, getDocument } = mock(backend, {});
-                    await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-
-                    const doc = await getDocument(uniqueCollectionName, qualifier);
-
-                    const record = doc as PersistenceRecord;
-                    expect(record.u)
-                        .to.be.an("array")
-                        .with.length(1);
-                });
-
-                it("Increments counter when limit is not exceeded", async () => {
-                    const { rateLimiter, getDocument, uniqueCollectionName, qualifier } = mock(backend, {
-                        maxCalls: 10,
-                    });
-
-                    const noOfTestCalls = 5;
-                    for (let i = 0; i < noOfTestCalls; i++) {
-                        await BluebirdPromise.delay(5);
-                        await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                    }
-
-                    const doc = await getDocument(uniqueCollectionName, qualifier);
-
-                    const record = doc as PersistenceRecord;
-                    expect(record.u)
-                        .to.be.an("array")
-                        .with.length(noOfTestCalls);
-                });
-
-                it("Does not increment counter when limit is exceeded", async () => {
-                    const maxCalls = 5;
-                    const noOfTestCalls = 10;
-
-                    const { rateLimiter, getDocument, uniqueCollectionName, qualifier } = mock(backend, {
-                        maxCalls,
-                    });
-
-                    for (let i = 0; i < noOfTestCalls; i++) {
-                        await BluebirdPromise.delay(5);
-                        await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                    }
-
-                    const doc = await getDocument(uniqueCollectionName, qualifier);
-
-                    const record = doc as PersistenceRecord;
-                    expect(record.u)
-                        .to.be.an("array")
-                        .with.length(maxCalls);
-                });
-
-                it("Calls older than period are removed from the database", async function() {
-                    this.timeout(3000);
-
-                    const maxCalls = 2;
-                    const periodSeconds = 1;
-
-                    const { rateLimiter, qualifier, uniqueCollectionName, getDocument } = mock(backend, {
-                        maxCalls,
-                        periodSeconds,
-                    });
-
-                    await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                    await BluebirdPromise.delay(periodSeconds * 1000 + 200);
-                    await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                    await BluebirdPromise.delay(200);
-
-                    const doc = await getDocument(uniqueCollectionName, qualifier);
-                    const record = doc as PersistenceRecord;
-                    expect(record.u)
-                        .to.be.an("array")
-                        .with.length(1);
-                });
-            });
-
-            describe("rejectOnQuotaExceededOrRecordUsage", () => {
-                it("throws functions.https.HttpsException when limit is exceeded", async () => {
-                    const maxCalls = 1;
-                    const noOfTestCalls = 2;
-
-                    const { rateLimiter, qualifier } = mock(backend, {
-                        maxCalls,
-                    });
-
-                    for (let i = 0; i < noOfTestCalls; i++) {
-                        await BluebirdPromise.delay(5);
-                        await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                    }
-
-                    await expect(
-                        rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier),
-                    ).to.eventually.be.rejectedWith(functions.https.HttpsError);
-                });
-            });
-
-            [
-                {
-                    name: "isQuotaExceededOrRecordUsage",
-                    methodFactory(rateLimiter: FirebaseFunctionsRateLimiter) {
-                        return rateLimiter.isQuotaExceededOrRecordUsage.bind(rateLimiter);
-                    },
-                },
-                {
-                    name: "isQuotaAlreadyExceeded",
-                    methodFactory(rateLimiter: FirebaseFunctionsRateLimiter) {
-                        return rateLimiter.isQuotaAlreadyExceeded.bind(rateLimiter);
-                    },
-                },
-            ].forEach(testedMethod =>
-                describe(`#${testedMethod.name}`, () => {
-                    it("Limit is exceeded if too much calls in specified period", async () => {
-                        const maxCalls = 5;
-                        const noOfTestCalls = 10;
-
-                        const { rateLimiter, qualifier } = mock(backend, {
-                            maxCalls,
-                        });
-
-                        for (let i = 0; i < noOfTestCalls; i++) {
-                            await BluebirdPromise.delay(5);
+    [
+        {
+            name: "with qualifier",
+            qualifierFactory() {
+                return `q${uuid()}`;
+            },
+        },
+        {
+            name: "without qualifier",
+            qualifierFactory() {
+                return undefined;
+            },
+        },
+    ].forEach(test =>
+        describe(test.name, () => {
+            //
+            const backends: Array<"firestore" | "realtimedb" | "mock"> = ["firestore", "realtimedb", "mock"];
+            backends.forEach((backend: "firestore" | "realtimedb" | "mock") =>
+                describe("Backend " + backend, () => {
+                    describe("isQuotaExceededOrRecordUsage", () => {
+                        it("Uses qualifier to identify document in the collection", async () => {
+                            const { rateLimiter, uniqueCollectionName, getDocument } = mock(backend, {});
+                            const qualifier = test.qualifierFactory();
                             await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                        }
 
-                        const method = testedMethod.methodFactory(rateLimiter);
-                        expect(await method(qualifier)).to.be.equal(true);
-                    });
+                            const doc = await getDocument(
+                                uniqueCollectionName,
+                                qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+                            );
 
-                    it("Limit is not exceeded if too much calls not in specified period", async function() {
-                        this.timeout(3000);
-
-                        const maxCalls = 2;
-                        const periodSeconds = 1;
-
-                        const { rateLimiter, qualifier } = mock(backend, {
-                            maxCalls,
-                            periodSeconds,
+                            const record = doc as PersistenceRecord;
+                            expect(record.u)
+                                .to.be.an("array")
+                                .with.length(1);
                         });
 
-                        await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                        await BluebirdPromise.delay(periodSeconds * 1000 + 200);
+                        it("Increments counter when limit is not exceeded", async () => {
+                            const { rateLimiter, getDocument, uniqueCollectionName } = mock(backend, {
+                                maxCalls: 10,
+                            });
+                            const qualifier = test.qualifierFactory();
 
-                        const method = testedMethod.methodFactory(rateLimiter);
-                        expect(await method(qualifier)).to.be.equal(false);
+                            const noOfTestCalls = 5;
+                            for (let i = 0; i < noOfTestCalls; i++) {
+                                await BluebirdPromise.delay(5);
+                                await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                            }
+
+                            const doc = await getDocument(
+                                uniqueCollectionName,
+                                qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+                            );
+
+                            const record = doc as PersistenceRecord;
+                            expect(record.u)
+                                .to.be.an("array")
+                                .with.length(noOfTestCalls);
+                        });
+
+                        it("Does not increment counter when limit is exceeded", async () => {
+                            const maxCalls = 5;
+                            const noOfTestCalls = 10;
+
+                            const { rateLimiter, getDocument, uniqueCollectionName } = mock(backend, {
+                                maxCalls,
+                            });
+                            const qualifier = test.qualifierFactory();
+
+                            for (let i = 0; i < noOfTestCalls; i++) {
+                                await BluebirdPromise.delay(5);
+                                await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                            }
+
+                            const doc = await getDocument(
+                                uniqueCollectionName,
+                                qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+                            );
+
+                            const record = doc as PersistenceRecord;
+                            expect(record.u)
+                                .to.be.an("array")
+                                .with.length(maxCalls);
+                        });
+
+                        it("Calls older than period are removed from the database", async function() {
+                            this.timeout(3000);
+
+                            const maxCalls = 2;
+                            const periodSeconds = 1;
+
+                            const { rateLimiter, uniqueCollectionName, getDocument } = mock(backend, {
+                                maxCalls,
+                                periodSeconds,
+                            });
+                            const qualifier = test.qualifierFactory();
+
+                            await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                            await BluebirdPromise.delay(periodSeconds * 1000 + 200);
+                            await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                            await BluebirdPromise.delay(200);
+
+                            const doc = await getDocument(
+                                uniqueCollectionName,
+                                qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+                            );
+                            const record = doc as PersistenceRecord;
+                            expect(record.u)
+                                .to.be.an("array")
+                                .with.length(1);
+                        });
                     });
+
+                    describe("rejectOnQuotaExceededOrRecordUsage", () => {
+                        it("throws functions.https.HttpsException when limit is exceeded", async () => {
+                            const maxCalls = 1;
+                            const noOfTestCalls = 2;
+
+                            const { rateLimiter } = mock(backend, {
+                                maxCalls,
+                            });
+                            const qualifier = test.qualifierFactory();
+
+                            for (let i = 0; i < noOfTestCalls; i++) {
+                                await BluebirdPromise.delay(5);
+                                await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                            }
+
+                            await expect(
+                                rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier),
+                            ).to.eventually.be.rejectedWith(functions.https.HttpsError);
+                        });
+
+                        it("Is fulfilled when limit is not exceeded", async () => {
+                            const maxCalls = 10;
+                            const noOfTestCalls = 2;
+
+                            const { rateLimiter } = mock(backend, {
+                                maxCalls,
+                            });
+                            const qualifier = test.qualifierFactory();
+
+                            for (let i = 0; i < noOfTestCalls; i++) {
+                                await BluebirdPromise.delay(5);
+                                await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                            }
+
+                            await expect(rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier)).to.eventually.be
+                                .fulfilled;
+                        });
+                    });
+
+                    [
+                        {
+                            name: "isQuotaExceededOrRecordUsage",
+                            methodFactory(rateLimiter: FirebaseFunctionsRateLimiter) {
+                                return rateLimiter.isQuotaExceededOrRecordUsage.bind(rateLimiter);
+                            },
+                        },
+                        {
+                            name: "isQuotaAlreadyExceeded",
+                            methodFactory(rateLimiter: FirebaseFunctionsRateLimiter) {
+                                return rateLimiter.isQuotaAlreadyExceeded.bind(rateLimiter);
+                            },
+                        },
+                    ].forEach(testedMethod =>
+                        describe(`#${testedMethod.name}`, () => {
+                            it("Limit is exceeded if too much calls in specified period", async () => {
+                                const maxCalls = 5;
+                                const noOfTestCalls = 10;
+
+                                const { rateLimiter } = mock(backend, {
+                                    maxCalls,
+                                });
+                                const qualifier = test.qualifierFactory();
+
+                                for (let i = 0; i < noOfTestCalls; i++) {
+                                    await BluebirdPromise.delay(5);
+                                    await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                                }
+
+                                const method = testedMethod.methodFactory(rateLimiter);
+                                expect(await method(qualifier)).to.be.equal(true);
+                            });
+
+                            it("Limit is not exceeded if too much calls not in specified period", async function() {
+                                this.timeout(3000);
+
+                                const maxCalls = 2;
+                                const periodSeconds = 1;
+
+                                const { rateLimiter } = mock(backend, {
+                                    maxCalls,
+                                    periodSeconds,
+                                });
+                                const qualifier = test.qualifierFactory();
+
+                                await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
+                                await BluebirdPromise.delay(periodSeconds * 1000 + 200);
+
+                                const method = testedMethod.methodFactory(rateLimiter);
+                                expect(await method(qualifier)).to.be.equal(false);
+                            });
+                        }),
+                    );
                 }),
             );
+
+            describe("Firestore backend specific tests", () => {
+                it("Writes to specified collection", async () => {
+                    const { rateLimiter, firestore, uniqueCollectionName } = mock("firestore", {});
+                    await rateLimiter.isQuotaExceededOrRecordUsage();
+
+                    const collection = await firestore.collection(uniqueCollectionName).get();
+                    expect(collection.size).to.be.equal(1);
+                });
+            });
+
+            describe("Realtimedb backend specific tests", () => {
+                it("Writes to specified key", async () => {
+                    const { rateLimiter, database, uniqueCollectionName } = mock("realtimedb", {});
+                    await rateLimiter.isQuotaExceededOrRecordUsage();
+
+                    const collection = (await database.ref(`${uniqueCollectionName}`).once("value")).val();
+                    expect(_.keys(collection).length).to.be.equal(1);
+                });
+            });
         }),
     );
-
-    describe("Firestore backend specific tests", () => {
-        it("Writes to specified collection", async () => {
-            const { rateLimiter, firestore, uniqueCollectionName } = mock("firestore", {});
-            await rateLimiter.isQuotaExceededOrRecordUsage();
-
-            const collection = await firestore.collection(uniqueCollectionName).get();
-            expect(collection.size).to.be.equal(1);
-        });
-    });
-
-    describe("Realtimedb backend specific tests", () => {
-        it("Writes to specified key", async () => {
-            const { rateLimiter, database, uniqueCollectionName } = mock("realtimedb", {});
-            await rateLimiter.isQuotaExceededOrRecordUsage();
-
-            const collection = (await database.ref(`${uniqueCollectionName}`).once("value")).val();
-            expect(_.keys(collection).length).to.be.equal(1);
-        });
-    });
 });

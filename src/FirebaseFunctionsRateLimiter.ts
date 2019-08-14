@@ -14,6 +14,8 @@ import { FirestoreEquivalent } from "./types/FirestoreEquivalent";
 import { RealtimeDbEquivalent } from "./types/RealtimeDbEquivalent";
 
 export class FirebaseFunctionsRateLimiter {
+    public static DEFAULT_QUALIFIER = "default_qualifier";
+
     /*
      * Factories
      */
@@ -48,7 +50,6 @@ export class FirebaseFunctionsRateLimiter {
     /*
      *  Implementation
      */
-    private static DEFAULT_QUALIFIER = "default_qualifier";
 
     private configurationFull: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull;
     private genericRateLimiter: GenericRateLimiter;

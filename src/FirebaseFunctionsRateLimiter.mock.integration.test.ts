@@ -15,7 +15,6 @@ export function mock(
     const app = firebase.initializeTestApp({ projectId: "unit-testing-" + Date.now(), databaseName: "db" });
     const uniqueCollectionName = uuid();
     const uniqueDocName = uuid();
-    const qualifier = uuid();
     const firestore = app.firestore();
     const database = app.database();
     const persistenceProviderMock = new PersistenceProviderMock();
@@ -48,7 +47,6 @@ export function mock(
         database,
         uniqueCollectionName,
         uniqueDocName,
-        qualifier,
         rateLimiter,
         getDocument,
     };
