@@ -14,6 +14,9 @@ import { FirestoreEquivalent } from "./types/FirestoreEquivalent";
 import { RealtimeDbEquivalent } from "./types/RealtimeDbEquivalent";
 
 export class FirebaseFunctionsRateLimiter {
+    /*
+     * Factories
+     */
     public static withFirestoreBackend(
         configuration: FirebaseFunctionsRateLimiterConfiguration,
         firestore: admin.firestore.Firestore | FirestoreEquivalent,
@@ -42,6 +45,11 @@ export class FirebaseFunctionsRateLimiter {
         return new FirebaseFunctionsRateLimiter(configuration || defaultConfig, provider);
     }
 
+    /*
+     *  Implementation
+     */
+    private static DEFAULT_QUALIFIER = "default_qualifier";
+
     private configurationFull: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull;
     private genericRateLimiter: GenericRateLimiter;
     private debugFn: (msg: string) => void;
@@ -69,17 +77,66 @@ export class FirebaseFunctionsRateLimiter {
         );
     }
 
+    /**
+     * Checks if quota is exceeded. If not — records usage time in the backend database.
+     * The method is deprecated as it was renamed to isQuotaExceededOrRecordUsage
+     *
+     * @param qualifier — a string that identifies the limited resource accessor (for example the user id)
+     * @deprecated
+     */
     public async isQuotaExceeded(qualifier?: string): Promise<boolean> {
-        return await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
+        return this.isQuotaExceededOrRecordUsage(qualifier);
     }
 
+    /**
+     * Checks if quota is exceeded. If not — records usage time in the backend database.
+     *
+     * @param qualifier — a string that identifies the limited resource accessor (for example the user id)
+     * @deprecated
+     */
+    public async isQuotaExceededOrRecordUsage(qualifier?: string): Promise<boolean> {
+        return await this.genericRateLimiter.isQuotaExceededOrRecordCall(
+            qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+        );
+    }
+
+    /**
+     * Checks if quota is exceeded. If not — records usage time in the backend database and then
+     * is rejected with functions.https.HttpsError (this is the type of error that can be caught when
+     * firebase function is called directly: see https://firebase.google.com/docs/functions/callable)
+     * The method is deprecated as it was renamed to rejectOnQuotaExceededOrRecordUsage
+     *
+     * @param qualifier  — a string that identifies the limited resource accessor (for example the user id)
+     * @deprecated
+     */
     public async rejectOnQuotaExceeded(qualifier?: string): Promise<void> {
-        const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(qualifier || "default_qualifier");
+        const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(
+            qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+        );
         if (isExceeded) {
             throw this.constructRejectionError(qualifier);
         }
     }
 
+    /**
+     * Checks if quota is exceeded. If not — records usage time in the backend database and then
+     * is rejected with functions.https.HttpsError (this is the type of error that can be caught when
+     * firebase function is called directly: see https://firebase.google.com/docs/functions/callable)
+     *
+     * @param qualifier  — a string that identifies the limited resource accessor (for example the user id)
+     */
+    public async rejectOnQuotaExceededOrRecordUsage(qualifier?: string): Promise<void> {
+        const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(
+            qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
+        );
+        if (isExceeded) {
+            throw this.constructRejectionError(qualifier);
+        }
+    }
+
+    /*
+     * Private methods
+     */
     private constructRejectionError(qualifier?: string): functions.https.HttpsError {
         const c = this.configurationFull;
         const msg =
