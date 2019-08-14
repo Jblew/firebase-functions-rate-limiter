@@ -15,8 +15,10 @@ install:
 
 script:
     - npm run build
-    - npm run test
-    - npm run verify
+    - npm run testall-with-coverage-lcov
+
+after_success:
+    - npm run upload-coverage
 
 deploy:
     - provider: script

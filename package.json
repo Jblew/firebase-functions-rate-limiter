@@ -22,7 +22,11 @@
     "do_verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
     "verify": "bash scripts/run-integration-tests-with-firebase-emulator.sh",
     "lint-fix": "tslint --fix -c tslint.json -p tsconfig.lint.json",
-    "checkall": "npm run lint-fix && npm run build && npm run test && npm run verify",
+    "checkall": "npm run lint && npm run build && npm run test && npm run verify",
+    "testall": "npm run test && npm run verify",
+    "testall-with-coverage": "nyc npm run testall",
+    "testall-with-coverage-lcov": "nyc --reporter=lcov npm run testall",
+    "upload-coverage": "codecov",
     "semantic-release": "semantic-release"
   },
   "dependencies": {
@@ -46,6 +50,9 @@
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",
     "husky": "^3.0.3",
+    "nyc": "^14.1.1",
+    "codecov": "^3.5.0",
+    "istanbul": "^0.4.5",
     "jblew-tslint-config": "^0.1.0",
     "lodash": "^4.17.15",
     "mocha": "^6.2.0",
@@ -68,6 +75,23 @@
         0
       ]
     }
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "**/*.test.ts",
+      "**/_test"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": true
   },
   "husky": {
     "hooks": {
