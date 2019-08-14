@@ -10,6 +10,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
     private firestore: admin.firestore.Firestore | FirestoreEquivalent;
     private debugFn: (msg: string) => void;
 
+    /* istanbul ignore next (debugFn), because typescript injects if for default parameters */
     public constructor(
         firestore: FirestoreEquivalent,
         debugFn: (msg: string) => void = (msg: string) => {
@@ -36,6 +37,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
             }
             result = updatedRecord;
         });
+        /* istanbul ignore next */
         if (!result) throw new Error("FirestorePersistenceProvider: Persistence record could not be updated");
         return result;
     }

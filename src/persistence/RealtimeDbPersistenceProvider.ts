@@ -10,6 +10,7 @@ export class RealtimeDbPersistenceProvider implements PersistenceProvider {
 
     private debugFn: (msg: string) => void;
 
+    /* istanbul ignore next (debugFn), because typescript injects if for default parameters */
     public constructor(
         database: RealtimeDbEquivalent,
         debugFn: (msg: string) => void = (msg: string) => {
@@ -31,7 +32,9 @@ export class RealtimeDbPersistenceProvider implements PersistenceProvider {
 
         const response = await ref.transaction(dataToUpdate => this.wrapUpdaterFn(updaterFn)(dataToUpdate));
         const { snapshot, committed } = response;
+        /* istanbul ignore next because this is not testable locally */
         if (!snapshot) throw new Error("RealtimeDbPersistenceProvider: realtime db didn't respond with data");
+        /* istanbul ignore next because this is not testable locally */
         if (!committed) throw new Error("RealtimeDbPersistenceProvider: could not save data");
 
         const data = snapshot.val();

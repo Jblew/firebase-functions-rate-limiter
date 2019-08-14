@@ -16,6 +16,7 @@ export class PersistenceProviderMock implements PersistenceProvider {
             await this.saveRecord(collectionName, recordName, updatedRecord);
             result = updatedRecord;
         });
+        /* istanbul ignore next */
         if (!result) throw new Error("PersistenceProviderMock: Persistence record could not be updated");
         return result;
     }

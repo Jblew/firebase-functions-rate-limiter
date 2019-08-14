@@ -43,7 +43,9 @@ export class FirebaseFunctionsRateLimiter {
             periodSeconds: 10,
             maxCalls: Number.MAX_SAFE_INTEGER,
         };
+        /* istanbul ignore next */
         const provider = persistenceProviderMock || new PersistenceProviderMock();
+        /* istanbul ignore next */
         return new FirebaseFunctionsRateLimiter(configuration || defaultConfig, provider);
     }
 
@@ -78,6 +80,7 @@ export class FirebaseFunctionsRateLimiter {
         );
     }
 
+    /* istanbul ignore next because this method was renamed and is now deprecated */
     /**
      * Checks if quota is exceeded. If not — records usage time in the backend database.
      * The method is deprecated as it was renamed to isQuotaExceededOrRecordUsage
@@ -89,6 +92,7 @@ export class FirebaseFunctionsRateLimiter {
         return this.isQuotaExceededOrRecordUsage(qualifier);
     }
 
+    /* istanbul ignore next because this method was renamed and is now deprecated */
     /**
      * Checks if quota is exceeded. If not — records usage time in the backend database.
      *
@@ -101,6 +105,7 @@ export class FirebaseFunctionsRateLimiter {
         );
     }
 
+    /* istanbul ignore next because this method was renamed and is now deprecated */
     /**
      * Checks if quota is exceeded. If not — records usage time in the backend database and then
      * is rejected with functions.https.HttpsError (this is the type of error that can be caught when
@@ -156,6 +161,7 @@ export class FirebaseFunctionsRateLimiter {
     private constructDebugFn(
         config: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull,
     ): (msg: string) => void {
+        /* istanbul ignore if */
         if (config.debug) return (msg: string) => console.log(msg);
         else {
             return (msg: string) => {
