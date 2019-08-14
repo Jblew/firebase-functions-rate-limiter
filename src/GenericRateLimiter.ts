@@ -43,6 +43,13 @@ export class GenericRateLimiter {
         return resultHolder.isQuotaExceeded;
     }
 
+    public async isQuotaAlreadyExceededDoNotRecordCall(qualifier: string): Promise<boolean> {
+        const timestampsSeconds = this.getTimestampsSeconds();
+        const record = await this.persistenceProvider.get(this.configuration.name, qualifier);
+        const recentUsages: number[] = this.selectRecentUsages(record.u, timestampsSeconds.threshold);
+        return this.isQuotaExceeded(recentUsages.length);
+    }
+
     private runTransactionForAnswer(
         input: PersistenceRecord,
         resultHolder: { isQuotaExceeded: boolean },
