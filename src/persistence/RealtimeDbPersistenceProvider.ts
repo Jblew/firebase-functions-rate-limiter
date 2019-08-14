@@ -63,15 +63,4 @@ export class RealtimeDbPersistenceProvider implements PersistenceProvider {
             u: [],
         };
     }
-
-    /*
-    private persistenceRecordToArray(r: PersistenceRecord): number[] {
-        return r.usages;
-    }
-
-    private arrayToPersistenceRecord(arr: number[]): PersistenceRecord {
-        return {
-            usages: arr,
-        };
-    }*/
 }
