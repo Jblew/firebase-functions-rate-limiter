@@ -40,6 +40,10 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
         return result;
     }
 
+    public async get(collectionName: string, recordName: string): Promise<PersistenceRecord> {
+        return await this.getRecord(collectionName, recordName);
+    }
+
     public setDebugFn(debugFn: (msg: string) => void) {
         this.debugFn = debugFn;
     }

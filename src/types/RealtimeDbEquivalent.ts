@@ -8,6 +8,7 @@ export namespace RealtimeDbEquivalent {
             updateFn: (data: any) => any,
             completeFn?: any,
         ): Promise<{ committed: boolean; snapshot: DataSnapshot | null }>;
+        once(eventType: "value"): Promise<DataSnapshot>;
     }
 
     export interface DataSnapshot {
