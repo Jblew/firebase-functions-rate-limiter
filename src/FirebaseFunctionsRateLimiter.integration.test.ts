@@ -254,6 +254,13 @@ describe("FirebaseFunctionsRateLimiter", () => {
                     expect(_.keys(collection).length).to.be.equal(1);
                 });
             });
+
+            describe("getConfiguration", () => {
+                it("Returns correct configuration", () => {
+                    const { rateLimiter, config } = mock("firestore", { maxCalls: 5 });
+                    expect(rateLimiter.getConfiguration()).to.deep.include(config);
+                });
+            });
         }),
     );
 });

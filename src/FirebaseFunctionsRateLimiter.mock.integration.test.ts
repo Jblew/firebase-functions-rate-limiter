@@ -49,5 +49,6 @@ export function mock(
         uniqueDocName,
         rateLimiter,
         getDocument,
+        config,
     };
 }

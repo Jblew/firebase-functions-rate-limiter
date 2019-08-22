@@ -146,6 +146,13 @@ export class FirebaseFunctionsRateLimiter {
         );
     }
 
+    /**
+     * Returns this rate limiter configuration
+     */
+    public getConfiguration(): FirebaseFunctionsRateLimiterConfiguration {
+        return this.configurationFull;
+    }
+
     /*
      * Private methods
      */

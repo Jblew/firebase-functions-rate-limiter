@@ -195,6 +195,7 @@ const limiter = FirebaseFunctionsRateLimiter.mock()
 
 - `isQuotaAlreadyExceeded(qualifier?: string)` — Checks if quota was exceed, but does not record a usage. If you use this, you must call isQuotaExceededOrRecordUsage() to record the usage.
 
+- `getConfiguration()` — Returns this rate limiter configuration.
   
 
 - ~~`isQuotaExceeded(qualifier?: string)`~~ — **deprecated**: renamed to isQuotaExceededOrRecordUsage
