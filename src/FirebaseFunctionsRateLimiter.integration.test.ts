@@ -6,8 +6,8 @@ import * as functions from "firebase-functions";
 import { _, expect, uuid } from "./_test/test_environment";
 import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
-import { PersistenceRecord } from "./persistence/PersistenceRecord";
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
+import { PersistenceRecord } from "./persistence/PersistenceRecord";
 
 describe("FirebaseFunctionsRateLimiter", () => {
     //
@@ -199,7 +199,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                             const qualifier = test.qualifierFactory();
                             await rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier);
 
-                            const errorFactory = configInErrorFactory => {
+                            const errorFactory = (configInErrorFactory: FirebaseFunctionsRateLimiterConfiguration) => {
                                 expect(configInErrorFactory).to.deep.include(config);
                                 return new Error("error-from-factory");
                             };
