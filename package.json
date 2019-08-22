@@ -59,7 +59,7 @@
     "semantic-release": "^15.13.21",
     "sinon": "^7.4.1",
     "ts-node": "8.3.0",
-    "tslint": "5.18.0",
+    "tslint": "5.19.0",
     "typescript": "3.5.3",
     "uuid": "^3.3.3"
   },
