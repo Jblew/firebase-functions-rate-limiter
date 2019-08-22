@@ -191,7 +191,7 @@ const limiter = FirebaseFunctionsRateLimiter.mock()
 
 - `isQuotaExceededOrRecordUsage(qualifier?: string)` — Checks if quota was exceed. If not — it records the call time in the appropriate backend.
 
-- `rejectOnQuotaExceededOrRecordUsage(qualifier?: string)` — Checks if quota was exceed. If not — it records the call time in the appropriate backend and is rejected with *functions.https.HttpsException*. This particular exception can be caught when calling the firebase function directly (see https://firebase.google.com/docs/functions/callable).
+- `rejectOnQuotaExceededOrRecordUsage(qualifier?: string, errorFactory?: (configuration) => Error)` — Checks if quota was exceed. If not — it records the call time in the appropriate backend and is rejected with *functions.https.HttpsException*. This particular exception can be caught when calling the firebase function directly (see https://firebase.google.com/docs/functions/callable). When errorFactory is provided, it is used to obtain error that is thrown in case of exceeded limit.
 
 - `isQuotaAlreadyExceeded(qualifier?: string)` — Checks if quota was exceed, but does not record a usage. If you use this, you must call isQuotaExceededOrRecordUsage() to record the usage.
 

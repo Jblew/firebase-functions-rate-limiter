@@ -124,14 +124,20 @@ export class FirebaseFunctionsRateLimiter {
      * is rejected with functions.https.HttpsError (this is the type of error that can be caught when
      * firebase function is called directly: see https://firebase.google.com/docs/functions/callable)
      *
-     * @param qualifier  — a string that identifies the limited resource accessor (for example the user id)
+     * @param qualifier (optional) — a string that identifies the limited resource accessor (for example the user id)
+     * @param errorFactory (optional) — when errorFactory is provided, it is used to obtain
+     *                                  error that is thrown in case of exceeded limit.
      */
-    public async rejectOnQuotaExceededOrRecordUsage(qualifier?: string): Promise<void> {
+    public async rejectOnQuotaExceededOrRecordUsage(
+        qualifier?: string,
+        errorFactory?: (config: FirebaseFunctionsRateLimiterConfiguration) => Error,
+    ): Promise<void> {
         const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(
             qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
         );
         if (isExceeded) {
-            throw this.constructRejectionError(qualifier);
+            if (errorFactory) throw errorFactory(this.getConfiguration());
+            else throw this.constructRejectionError(qualifier);
         }
     }
 

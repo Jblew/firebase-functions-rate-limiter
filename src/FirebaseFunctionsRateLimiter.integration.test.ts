@@ -7,6 +7,7 @@ import { _, expect, uuid } from "./_test/test_environment";
 import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
+import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 
 describe("FirebaseFunctionsRateLimiter", () => {
     //
@@ -176,6 +177,36 @@ describe("FirebaseFunctionsRateLimiter", () => {
 
                             await expect(rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier)).to.eventually.be
                                 .fulfilled;
+                        });
+
+                        it("When error factory is provided, uses it to throw the error", async () => {
+                            const { rateLimiter } = mock(backend, {
+                                maxCalls: 1,
+                            });
+                            const qualifier = test.qualifierFactory();
+                            await rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier);
+
+                            const errorFactory = () => new Error("error-from-factory");
+                            await expect(
+                                rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier, errorFactory),
+                            ).to.eventually.be.rejectedWith(/error-from-factory/);
+                        });
+
+                        it("Provides valid configuration to error factory", async () => {
+                            const { rateLimiter, config } = mock(backend, {
+                                maxCalls: 1,
+                            });
+                            const qualifier = test.qualifierFactory();
+                            await rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier);
+
+                            const errorFactory = configInErrorFactory => {
+                                expect(configInErrorFactory).to.deep.include(config);
+                                return new Error("error-from-factory");
+                            };
+
+                            await expect(
+                                rateLimiter.rejectOnQuotaExceededOrRecordUsage(qualifier, errorFactory),
+                            ).to.eventually.be.rejectedWith(/error-from-factory/);
                         });
                     });
 
