@@ -130,7 +130,7 @@ export class FirebaseFunctionsRateLimiter {
      */
     public async rejectOnQuotaExceededOrRecordUsage(
         qualifier?: string,
-        errorFactory?: (config: FirebaseFunctionsRateLimiterConfiguration) => Error,
+        errorFactory?: (config: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull) => Error,
     ): Promise<void> {
         const isExceeded = await this.genericRateLimiter.isQuotaExceededOrRecordCall(
             qualifier || FirebaseFunctionsRateLimiter.DEFAULT_QUALIFIER,
@@ -155,7 +155,7 @@ export class FirebaseFunctionsRateLimiter {
     /**
      * Returns this rate limiter configuration
      */
-    public getConfiguration(): FirebaseFunctionsRateLimiterConfiguration {
+    public getConfiguration(): FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull {
         return this.configurationFull;
     }
 
