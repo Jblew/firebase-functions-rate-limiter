@@ -30,9 +30,9 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "firebase-admin": "^8.3.0",
-    "firebase-functions": "^3.2.0",
-    "ow": "^0.13.2"
+    "firebase-admin": "^8.9.2",
+    "firebase-functions": "^3.3.0",
+    "ow": "^0.15.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
