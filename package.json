@@ -1,119 +1,119 @@
 {
-  "name": "firebase-functions-rate-limiter",
-  "version": "0.0.0-development",
-  "description": "JS/TS library that allows you to set per - time, per - user or per - anything limits for calling Firebase cloud functions",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "engines": {
-    "node": ">=8"
-  },
-  "files": [
-    "/dist",
-    "package-lock.js"
-  ],
-  "scripts": {
-    "check": "if echo \"$(node --version)\" | grep -q \"$(cat .nvmrc)\"; then echo \"Node version correct\"; else echo \"Node version does not match that in .nvmrc\" && exit 1; fi",
-    "build:cleanbefore": "rm -rf dist",
-    "build:lint": "tslint -c tslint.json -p tsconfig.lint.json",
-    "build:node": "tsc",
-    "build": "npm run check && npm run build:cleanbefore && npm run build:node && npm run build:lint",
-    "prepare": "NODE_ENV=production npm run build",
-    "test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
-    "do_verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
-    "verify": "bash scripts/run-integration-tests-with-firebase-emulator.sh",
-    "lint-fix": "tslint --fix -c tslint.json -p tsconfig.lint.json",
-    "checkall": "npm run lint && npm run build && npm run test && npm run verify",
-    "testall": "npm run test && npm run verify",
-    "testall-with-coverage": "nyc npm run testall",
-    "testall-with-coverage-lcov": "nyc --reporter=lcov npm run testall",
-    "upload-coverage": "codecov",
-    "semantic-release": "semantic-release"
-  },
-  "dependencies": {
-    "firebase-admin": "^8.9.2",
-    "firebase-functions": "^3.3.0",
-    "ow": "^0.15.1"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^8.1.0",
-    "@commitlint/config-conventional": "^8.1.0",
-    "@firebase/testing": "^0.12.0",
-    "@types/bluebird": "^3.5.27",
-    "@types/chai": "^4.2.0",
-    "@types/chai-as-promised": "^7.1.2",
-    "@types/lodash": "^4.14.137",
-    "@types/mocha": "5.2.7",
-    "@types/node": "^12.7.2",
-    "@types/sinon": "7.0.13",
-    "@types/uuid": "^3.4.5",
-    "bluebird": "^3.5.5",
-    "chai": "4.2.0",
-    "chai-as-promised": "7.1.1",
-    "codecov": "^3.5.0",
-    "husky": "^3.0.4",
-    "istanbul": "^0.4.5",
-    "jblew-tslint-config": "^0.1.0",
-    "lodash": "^4.17.15",
-    "mocha": "^6.2.0",
-    "nyc": "^14.1.1",
-    "semantic-release": "^15.13.21",
-    "sinon": "^7.4.1",
-    "ts-node": "8.3.0",
-    "tslint": "5.18.0",
-    "typescript": "3.5.3",
-    "uuid": "^3.3.3"
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
+    "name": "firebase-functions-rate-limiter",
+    "version": "0.0.0-development",
+    "description": "JS/TS library that allows you to set per - time, per - user or per - anything limits for calling Firebase cloud functions",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "engines": {
+        "node": ">=8"
+    },
+    "files": [
+        "/dist",
+        "package-lock.js"
     ],
-    "rules": {
-      "header-max-length": [
-        0
-      ],
-      "scope-case": [
-        0
-      ]
+    "scripts": {
+        "check": "if echo \"$(node --version)\" | grep -q \"$(cat .nvmrc)\"; then echo \"Node version correct\"; else echo \"Node version does not match that in .nvmrc\" && exit 1; fi",
+        "build:cleanbefore": "rm -rf dist",
+        "build:lint": "tslint -c tslint.json -p tsconfig.lint.json",
+        "build:node": "tsc",
+        "build": "npm run check && npm run build:cleanbefore && npm run build:node && npm run build:lint",
+        "prepare": "NODE_ENV=production npm run build",
+        "test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+        "do_verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
+        "verify": "bash scripts/run-integration-tests-with-firebase-emulator.sh",
+        "lint-fix": "tslint --fix -c tslint.json -p tsconfig.lint.json",
+        "checkall": "npm run lint && npm run build && npm run test && npm run verify",
+        "testall": "npm run test && npm run verify",
+        "testall-with-coverage": "nyc npm run testall",
+        "testall-with-coverage-lcov": "nyc --reporter=lcov npm run testall",
+        "upload-coverage": "codecov",
+        "semantic-release": "semantic-release"
+    },
+    "dependencies": {
+        "firebase-admin": "^8.9.2",
+        "firebase-functions": "^3.3.0",
+        "ow": "^0.13.2"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^8.1.0",
+        "@commitlint/config-conventional": "^8.1.0",
+        "@firebase/testing": "^0.12.0",
+        "@types/bluebird": "^3.5.27",
+        "@types/chai": "^4.2.0",
+        "@types/chai-as-promised": "^7.1.2",
+        "@types/lodash": "^4.14.137",
+        "@types/mocha": "5.2.7",
+        "@types/node": "^12.7.2",
+        "@types/sinon": "7.0.13",
+        "@types/uuid": "^3.4.5",
+        "bluebird": "^3.5.5",
+        "chai": "4.2.0",
+        "chai-as-promised": "7.1.1",
+        "codecov": "^3.5.0",
+        "husky": "^3.0.4",
+        "istanbul": "^0.4.5",
+        "jblew-tslint-config": "^0.1.0",
+        "lodash": "^4.17.15",
+        "mocha": "^6.2.0",
+        "nyc": "^14.1.1",
+        "semantic-release": "^15.13.21",
+        "sinon": "^7.4.1",
+        "ts-node": "8.3.0",
+        "tslint": "5.18.0",
+        "typescript": "3.5.3",
+        "uuid": "^3.3.3"
+    },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ],
+        "rules": {
+            "header-max-length": [
+                0
+            ],
+            "scope-case": [
+                0
+            ]
+        }
+    },
+    "nyc": {
+        "extension": [
+            ".ts"
+        ],
+        "exclude": [
+            "**/*.d.ts",
+            "**/*.test.ts",
+            "**/_test"
+        ],
+        "include": [
+            "src/**/*.ts"
+        ],
+        "reporter": [
+            "html"
+        ],
+        "all": true
+    },
+    "husky": {
+        "hooks": {
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
+    "release": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Jblew/firebase-functions-rate-limiter"
+    },
+    "keywords": [
+        "firebase",
+        "firebase-functions",
+        "rate-limiter"
+    ],
+    "author": "Jędrzej Lewandowski <jedrzejblew@gmail.com> (https://jedrzej.lewandowski.doctor/)",
+    "contributors": [
+        "Jędrzej Lewandowski <jedrzejblew@gmail.com> (https://jedrzej.lewandowski.doctor/)"
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Jblew/firebase-functions-rate-limiter/issues"
     }
-  },
-  "nyc": {
-    "extension": [
-      ".ts"
-    ],
-    "exclude": [
-      "**/*.d.ts",
-      "**/*.test.ts",
-      "**/_test"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "reporter": [
-      "html"
-    ],
-    "all": true
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "release": {},
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Jblew/firebase-functions-rate-limiter"
-  },
-  "keywords": [
-    "firebase",
-    "firebase-functions",
-    "rate-limiter"
-  ],
-  "author": "Jędrzej Lewandowski <jedrzejblew@gmail.com> (https://jedrzej.lewandowski.doctor/)",
-  "contributors": [
-    "Jędrzej Lewandowski <jedrzejblew@gmail.com> (https://jedrzej.lewandowski.doctor/)"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Jblew/firebase-functions-rate-limiter/issues"
-  }
 }
