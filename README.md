@@ -33,7 +33,7 @@ Then:
 ```typescript
 import FirebaseFunctionsRateLimiter from "firebase-functions-rate-limiter";
 // or
-const FirebaseFunctionsRateLimiter = require("firebase-functions-rate-limiter");
+const { FirebaseFunctionsRateLimiter } = require("firebase-functions-rate-limiter");
 ```
 
 
