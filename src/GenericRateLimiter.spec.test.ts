@@ -1,10 +1,10 @@
 /* tslint:disable:max-classes-per-file */
 
-import { _, expect, sinon } from "./_test/test_environment";
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 import { GenericRateLimiter } from "./GenericRateLimiter";
 import { PersistenceProviderMock } from "./persistence/PersistenceProviderMock";
 import { TimestampProviderMock } from "./timestamp/TimestampProviderMock.test";
+import { expect, sinon, _ } from "./_test/test_environment";
 
 const sampleConfiguration: FirebaseFunctionsRateLimiterConfiguration.ConfigurationFull = {
     name: "rate_limiter_1",

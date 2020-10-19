@@ -3,11 +3,11 @@ import * as firebase from "@firebase/testing";
 import * as BluebirdPromise from "bluebird";
 import * as functions from "firebase-functions";
 
-import { _, expect, uuid } from "./_test/test_environment";
 import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
+import { expect, uuid, _ } from "./_test/test_environment";
 
 describe("FirebaseFunctionsRateLimiter", () => {
     //
@@ -44,8 +44,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
         },
     ].forEach(test =>
         describe(test.name, () => {
-            //
-            const backends: Array<"firestore" | "realtimedb" | "mock"> = ["firestore", "realtimedb", "mock"];
+            const backends = ["firestore", "realtimedb", "mock"] as const;
             backends.forEach((backend: "firestore" | "realtimedb" | "mock") =>
                 describe("Backend " + backend, () => {
                     describe("isQuotaExceededOrRecordUsage", () => {

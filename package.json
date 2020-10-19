@@ -52,7 +52,7 @@
         "codecov": "^3.8.0",
         "husky": "^4.3.0",
         "istanbul": "^0.4.5",
-        "jblew-tslint-config": "^1.1.0",
+        "jblew-tslint-config": "^0.1.0",
         "lodash": "^4.17.20",
         "mocha": "^8.2.0",
         "nyc": "^15.1.0",

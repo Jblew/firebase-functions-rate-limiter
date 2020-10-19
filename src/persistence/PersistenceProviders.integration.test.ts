@@ -1,7 +1,7 @@
 /* tslint:disable:max-classes-per-file */
 import * as firebase from "@firebase/testing";
 
-import { _, expect, sinon, uuid } from "../_test/test_environment";
+import { expect, sinon, uuid, _ } from "../_test/test_environment";
 
 import { FirestorePersistenceProvider } from "./FirestorePersistenceProvider";
 import { PersistenceProvider } from "./PersistenceProvider";
