@@ -2,7 +2,7 @@
 import * as firebase from "@firebase/testing";
 import * as _ from "lodash";
 import "mocha";
-import * as uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 
 import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
