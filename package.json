@@ -12,11 +12,10 @@
         "package-lock.js"
     ],
     "scripts": {
-        "check": "if echo \"$(node --version)\" | grep -q \"$(cat .nvmrc)\"; then echo \"Node version correct\"; else echo \"Node version does not match that in .nvmrc\" && exit 1; fi",
         "build:cleanbefore": "rm -rf dist",
         "build:lint": "tslint -c tslint.json -p tsconfig.lint.json",
         "build:node": "tsc",
-        "build": "npm run check && npm run build:cleanbefore && npm run build:node && npm run build:lint",
+        "build": "npm run build:cleanbefore && npm run build:node && npm run build:lint",
         "prepare": "NODE_ENV=production npm run build",
         "test": "find src -name '*.spec.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
         "do_verify": "find src -name '*.integration.test.ts' | TS_NODE_FILES=true TS_NODE_CACHE=false TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' xargs mocha -r ts-node/register --require source-map-support/register",
