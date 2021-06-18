@@ -197,7 +197,6 @@ const limiter = FirebaseFunctionsRateLimiter.mock()
 
 - `getConfiguration()` — Returns this rate limiter configuration.
   
-
 - ~~`isQuotaExceeded(qualifier?: string)`~~ — **deprecated**: renamed to isQuotaExceededOrRecordUsage
 
 - ~~`rejectOnQuotaExceeded(qualifier?: string)`~~ — **deprecated**: renamed to rejectOnQuotaExceededOrRecordUsage
@@ -233,5 +232,5 @@ Warmly welcomed:
 
 ***
 
-Made with ❤️ by [Jędrzej Lewandowski](https://jedrzej.lewandowski.doctor/).
+Made with ❤️ by [Jędrzej Lewandowski](https://jblew.pl/).
 
