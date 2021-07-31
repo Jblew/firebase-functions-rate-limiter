@@ -15,7 +15,7 @@ Mission: **limit number of calls per specified period of time**
 - Two backends: more efficient Realtime Database or Firestore for convenience?
 - Easy: call single function, no configuration
 - Efficient: only a single call read call to database (or firestore), two calls if limit not exceeded and usage is recorded
-- Concurrent-safe: uses atomis transactions in both backends
+- Concurrent-safe: uses atomic transactions in both backends
 - Clean: Uses only one key (or collection in firestore backend), creates single document for each qualifier. Does not leave rubbish in your database.
 - Typescript typings included
 - No firebase configuration required. You do not have to create any indexes or rules.
