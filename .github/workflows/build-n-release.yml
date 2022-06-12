@@ -1,0 +1,46 @@
+# For most projects, this workflow file will not need changing; you simply need
+# to commit it to your repository.
+#
+# You may wish to alter this file to override the set of languages analyzed,
+# or to provide custom queries or build logic.
+name: "Build and release"
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build_test_release:
+    name: Analyze
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      strategy:
+      matrix:
+        nodejs: [10, 12, 14, 16, 18]
+        release: [false]
+        include:
+          - release: true
+            nodejs: 16
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+          with:
+            node-version: ${{ matrix.version }}
+      
+      - run: scripts/setup-firebase-emulator-for-tests.sh
+      
+      - run: npm ci
+      
+      - run: npm run build
+      
+      - run: npm run testall-with-coverage-lcov
+      
+      - run: npm run upload-coverage
+      
+      - if: ${{ matrix.release }} == true
+        run: echo "Would deploy"
