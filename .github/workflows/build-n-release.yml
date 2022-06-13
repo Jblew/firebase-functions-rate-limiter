@@ -32,7 +32,9 @@ jobs:
       
       - run: npm run upload-coverage
       
-  deploy:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
     needs: [build_test]
     steps:
       - name: Checkout repository
@@ -44,4 +46,4 @@ jobs:
             
       - run: npm ci
       - run: npm run build      
-      -  run: echo "Would deploy"
+      - run: echo "Would deploy"
