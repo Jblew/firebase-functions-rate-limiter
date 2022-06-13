@@ -56,7 +56,7 @@ export class PersistenceProviderMock implements PersistenceProvider {
     }
 
     private delay(delayMs: number) {
-        return new Promise(function(resolve, reject) {
+        return new Promise<void>(function(resolve, reject) {
             setTimeout(function() {
                 resolve();
             }, delayMs);

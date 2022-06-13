@@ -1,12 +1,12 @@
 /* tslint:disable:max-classes-per-file no-console */
 import * as firebase from "@firebase/testing";
-import * as BluebirdPromise from "bluebird";
 import * as functions from "firebase-functions";
 
 import { FirebaseFunctionsRateLimiter } from "./FirebaseFunctionsRateLimiter";
 import { mock } from "./FirebaseFunctionsRateLimiter.mock.integration.test";
 import { FirebaseFunctionsRateLimiterConfiguration } from "./FirebaseFunctionsRateLimiterConfiguration";
 import { PersistenceRecord } from "./persistence/PersistenceRecord";
+import { delayMs } from "./utils.test";
 import { expect, uuid, _ } from "./_test/test_environment";
 
 describe("FirebaseFunctionsRateLimiter", () => {
@@ -72,7 +72,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
 
                             const noOfTestCalls = 5;
                             for (let i = 0; i < noOfTestCalls; i++) {
-                                await BluebirdPromise.delay(5);
+                                await delayMs(5);
                                 await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
                             }
 
@@ -97,7 +97,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                             const qualifier = test.qualifierFactory();
 
                             for (let i = 0; i < noOfTestCalls; i++) {
-                                await BluebirdPromise.delay(5);
+                                await delayMs(5);
                                 await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
                             }
 
@@ -125,9 +125,9 @@ describe("FirebaseFunctionsRateLimiter", () => {
                             const qualifier = test.qualifierFactory();
 
                             await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                            await BluebirdPromise.delay(periodSeconds * 1000 + 200);
+                            await delayMs(periodSeconds * 1000 + 200);
                             await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                            await BluebirdPromise.delay(200);
+                            await delayMs(200);
 
                             const doc = await getDocument(
                                 uniqueCollectionName,
@@ -151,7 +151,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                             const qualifier = test.qualifierFactory();
 
                             for (let i = 0; i < noOfTestCalls; i++) {
-                                await BluebirdPromise.delay(5);
+                                await delayMs(5);
                                 await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
                             }
 
@@ -170,7 +170,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                             const qualifier = test.qualifierFactory();
 
                             for (let i = 0; i < noOfTestCalls; i++) {
-                                await BluebirdPromise.delay(5);
+                                await delayMs(5);
                                 await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
                             }
 
@@ -234,7 +234,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                                 const qualifier = test.qualifierFactory();
 
                                 for (let i = 0; i < noOfTestCalls; i++) {
-                                    await BluebirdPromise.delay(5);
+                                    await delayMs(5);
                                     await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
                                 }
 
@@ -255,7 +255,7 @@ describe("FirebaseFunctionsRateLimiter", () => {
                                 const qualifier = test.qualifierFactory();
 
                                 await rateLimiter.isQuotaExceededOrRecordUsage(qualifier);
-                                await BluebirdPromise.delay(periodSeconds * 1000 + 200);
+                                await delayMs(periodSeconds * 1000 + 200);
 
                                 const method = testedMethod.methodFactory(rateLimiter);
                                 expect(await method(qualifier)).to.be.equal(false);
