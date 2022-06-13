@@ -1,3 +1,46 @@
 {
-    "extends": "jblew-tslint-config"
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {
+        "max-line-length": {
+            "options": [
+                120
+            ]
+        }
+    },
+    "rules": {
+        "max-line-length": {
+            "options": [
+                120
+            ]
+        },
+        "no-namespace": false,
+        "only-arrow-functions": false,
+        "object-literal-sort-keys": false,
+        "interface-name": false,
+        "arrow-parens": false,
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "object-literal-shorthand": true,
+        "ordered-imports": [
+            true,
+            {
+                "grouped-imports": "true"
+            }
+        ],
+        "no-unused-variable": true,
+        "cyclomatic-complexity": [
+            true,
+            10
+        ],
+        "curly": [
+            true,
+            "ignore-same-line"
+        ]
+    },
+    "rulesDirectory": []
 }
