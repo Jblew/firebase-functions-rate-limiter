@@ -1,13 +1,8 @@
-# For most projects, this workflow file will not need changing; you simply need
-# to commit it to your repository.
-#
-# You may wish to alter this file to override the set of languages analyzed,
-# or to provide custom queries or build logic.
 name: "Build and release"
 
 on:
   push:
-    branches: [master]
+    branches: [master, _jl_introduce_github_actions]
 
 jobs:
   build_test_release:
@@ -29,8 +24,8 @@ jobs:
         uses: actions/checkout@v2
 
       - uses: actions/setup-node@v3
-          with:
-            node-version: ${{ matrix.version }}
+        with:
+          node-version: ${{ matrix.version }}
       
       - run: scripts/setup-firebase-emulator-for-tests.sh
       
