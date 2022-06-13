@@ -5,18 +5,14 @@ on:
     branches: [master, _jl_introduce_github_actions]
 
 jobs:
-  build_test_release:
-    name: Analyze
+  build_test:
+    name: Build and test
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: true
       matrix:
         nodejs: [10, 12, 14, 16, 18]
-        release: [false]
-        include:
-          - release: true
-            nodejs: 16
 
     steps:
       - name: Checkout repository
@@ -36,5 +32,16 @@ jobs:
       
       - run: npm run upload-coverage
       
-      - if: ${{ matrix.release }} == true
-        run: echo "Would deploy"
+  deploy:
+    needs: [build_test]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+            
+      - run: npm ci
+      - run: npm run build      
+      -  run: echo "Would deploy"
