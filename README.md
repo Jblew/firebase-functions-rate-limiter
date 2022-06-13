@@ -20,6 +20,7 @@ Mission: **limit number of calls per specified period of time**
 - Typescript typings included
 - No firebase configuration required. You do not have to create any indexes or rules.
 - .mock() factory to make functions testing easier
+- Works with NodeJS 12, 14, 16, 18
 
 
 ## Installation

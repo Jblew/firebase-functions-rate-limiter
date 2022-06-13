@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        nodejs: [10, 12, 14, 16, 18]
+        nodejs: [12, 14, 16, 18]
 
     steps:
       - name: Checkout repository
