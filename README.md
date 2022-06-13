@@ -39,7 +39,7 @@ const { FirebaseFunctionsRateLimiter } = require("firebase-functions-rate-limite
 
 
 
-##Usage
+## Usage
 
 **Example 1**: limit calls for everyone:
 
@@ -216,7 +216,7 @@ There is no configuration needed in the firebase. This library does not do docum
 
 ### Need help?
 
-- Feel free to email me at <jedrzej@lewandowski.doctor>
+- Feel free to email me at <jedrzejblew@gmail.com>
 
 
 
@@ -227,11 +227,11 @@ Warmly welcomed:
 - Bug reports via issues
 - Enhancement requests via via issues
 - Pull requests
-- Security reports to jedrzej@lewandowski.doctor
+- Security reports to jedrzejblew@gmail.com
 
 
 
 ***
 
-Made with ❤️ by [Jędrzej Lewandowski](https://jblew.pl/).
+Made with ❤️ by [Jędrzej Lewandowski](https://jblewandowski.com/).
 
