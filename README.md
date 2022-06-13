@@ -12,7 +12,7 @@ Mission: **limit number of calls per specified period of time**
 
 ## Key features:
 
-- Two backends: more efficient Realtime Database or Firestore for convenience?
+- Two backends: Realtime Database (efficient) or Firestore (convenient)
 - Easy: call single function, no configuration
 - Efficient: only a single call read call to database (or firestore), two calls if limit not exceeded and usage is recorded
 - Concurrent-safe: uses atomic transactions in both backends
