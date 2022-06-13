@@ -2,7 +2,7 @@ name: "Build and release"
 
 on:
   push:
-    branches: [master, _jl_introduce_github_actions]
+    branches: [master]
 
 jobs:
   build_test:
@@ -46,4 +46,4 @@ jobs:
             
       - run: npm ci
       - run: npm run build      
-      - run: echo "Would deploy"
+      - run: npx semantic-release
