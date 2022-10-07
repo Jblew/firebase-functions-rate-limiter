@@ -71,7 +71,7 @@ describe("GenericRateLimiter", () => {
 
             await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
 
-            expect(_.values(persistenceProviderMock.persistenceObject)[0].u).to.contain(sampleTimestamp);
+            expect(_.values(persistenceProviderMock.persistenceObject)[0].u).to.contain(sampleTimestamp * 1000);
         });
 
         it("does not put current timestamp when quota was exceeded", async () => {
@@ -89,9 +89,7 @@ describe("GenericRateLimiter", () => {
             const quotaExceeded2 = await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
             expect(quotaExceeded2).to.be.equal(true);
 
-            expect(_.values(persistenceProviderMock.persistenceObject)[0].u)
-                .to.be.an("array")
-                .with.length(1);
+            expect(_.values(persistenceProviderMock.persistenceObject)[0].u).to.be.an("array").with.length(1);
         });
 
         describe("threshold tests", () => {
@@ -112,7 +110,7 @@ describe("GenericRateLimiter", () => {
 
                 for (let i = 0; i < 6; i++) {
                     timestampProviderMock.setTimestampSeconds(timestamp);
-                    savedTimestamps.push(timestamp);
+                    savedTimestamps.push(timestamp * 1000);
                     await genericRateLimiter.isQuotaExceededOrRecordCall(sampleQualifier);
                     timestamp += periodSeconds / 3 + 0.1; // remember: never push floats to the edges ;)
                 }
@@ -158,7 +156,7 @@ describe("GenericRateLimiter", () => {
         });
     });
 
-    describe("check tests", function() {
+    describe("check tests", function () {
         [
             {
                 name: "isQuotaExceededOrRecordCall",
@@ -172,7 +170,7 @@ describe("GenericRateLimiter", () => {
                     return genericRateLimiter.isQuotaAlreadyExceededDoNotRecordCall.bind(genericRateLimiter);
                 },
             },
-        ].forEach(testedMethod =>
+        ].forEach((testedMethod) =>
             describe(`#${testedMethod.name}`, () => {
                 it("returns true if there are more calls than maxCalls", async () => {
                     const periodSeconds = 20;

@@ -1,3 +1,3 @@
 export interface TimestampProvider {
-    getTimestampSeconds(): number;
+    getTimestampMs(): number;
 }

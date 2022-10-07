@@ -36,66 +36,67 @@ export class GenericRateLimiter {
         const resultHolder = {
             isQuotaExceeded: false,
         };
-        await this.persistenceProvider.updateAndGet(this.configuration.name, qualifier, record => {
-            return this.runTransactionForAnswer(record, resultHolder);
-        });
+
+        await this.persistenceProvider.updateAndGet(this.configuration.name, qualifier, (record) =>
+            this.runTransactionForAnswer(record, resultHolder),
+        );
 
         return resultHolder.isQuotaExceeded;
     }
 
     public async isQuotaAlreadyExceededDoNotRecordCall(qualifier: string): Promise<boolean> {
-        const timestampsSeconds = this.getTimestampsSeconds();
+        const timestampsMs = this.getTimestampsMs();
         const record = await this.persistenceProvider.get(this.configuration.name, qualifier);
-        const recentUsages: number[] = this.selectRecentUsages(record.u, timestampsSeconds.threshold);
-        return this.isQuotaExceeded(recentUsages.length);
+        const recentUsagesMs: number[] = this.selectRecentUsages(record.u, timestampsMs.threshold);
+        return this.isQuotaExceeded(recentUsagesMs.length);
     }
 
     private runTransactionForAnswer(
         input: PersistenceRecord,
         resultHolder: { isQuotaExceeded: boolean },
     ): PersistenceRecord {
-        const timestampsSeconds = this.getTimestampsSeconds();
+        const timestampsMs = this.getTimestampsMs();
 
         this.debugFn("Got record with usages " + input.u.length);
 
-        const recentUsages: number[] = this.selectRecentUsages(input.u, timestampsSeconds.threshold);
-        this.debugFn("Of these usages there are" + recentUsages.length + " usages that count into period");
+        const recentUsagesMs: number[] = this.selectRecentUsages(input.u, timestampsMs.threshold);
+        this.debugFn("Of these usages there are" + recentUsagesMs.length + " usages that count into period");
 
-        const result = this.isQuotaExceeded(recentUsages.length);
+        const result = this.isQuotaExceeded(recentUsagesMs.length);
         resultHolder.isQuotaExceeded = result;
         this.debugFn("The result is quotaExceeded=" + result);
 
         if (!result) {
-            this.debugFn("Quota was not exceeded, so recording a usage at " + timestampsSeconds.current);
-            recentUsages.push(timestampsSeconds.current);
+            this.debugFn("Quota was not exceeded, so recording a usage at " + timestampsMs.current);
+            recentUsagesMs.push(timestampsMs.current);
         }
 
         const newRecord: PersistenceRecord = {
-            u: recentUsages,
+            u: recentUsagesMs,
         };
         return newRecord;
     }
 
-    private selectRecentUsages(allUsages: number[], timestampThresholdSeconds: number): number[] {
-        const recentUsages: number[] = [];
+    private selectRecentUsages(allUsageTimestampsMs: number[], timestampThresholdMs: number): number[] {
+        const recentUsageTimestampsMs: number[] = [];
 
-        for (const usageTime of allUsages) {
-            if (usageTime > timestampThresholdSeconds) {
-                recentUsages.push(usageTime);
+        for (const timestampMs of allUsageTimestampsMs) {
+            if (timestampMs > timestampThresholdMs) {
+                recentUsageTimestampsMs.push(timestampMs);
             }
         }
-        return recentUsages;
+        return recentUsageTimestampsMs;
     }
 
     private isQuotaExceeded(numOfRecentUsages: number): boolean {
         return numOfRecentUsages >= this.configuration.maxCalls;
     }
 
-    private getTimestampsSeconds(): { current: number; threshold: number } {
-        const currentServerTimestampSeconds: number = this.timestampProvider.getTimestampSeconds();
+    private getTimestampsMs(): { current: number; threshold: number } {
+        const currentServerTimestampMs: number = this.timestampProvider.getTimestampMs();
         return {
-            current: currentServerTimestampSeconds,
-            threshold: currentServerTimestampSeconds - this.configuration.periodSeconds,
+            current: currentServerTimestampMs,
+            threshold: currentServerTimestampMs - this.configuration.periodSeconds * 1000,
         };
     }
 }
