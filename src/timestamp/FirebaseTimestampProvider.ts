@@ -1,9 +1,9 @@
-import * as admin from "firebase-admin";
+import { Timestamp } from 'firebase-admin/firestore';
 
 import { TimestampProvider } from "./TimestampProvider";
 
 export class FirebaseTimestampProvider implements TimestampProvider {
     public getTimestampSeconds(): number {
-        return admin.firestore.Timestamp.now().seconds;
+        return Timestamp.now().seconds;
     }
 }

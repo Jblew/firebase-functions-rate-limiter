@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es5",
+        "target": "ES5",
         "strict": true,
         "declaration": true,
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": false,
         "noImplicitAny": true,
         "allowJs": false,
+        "skipLibCheck": true,
         "sourceMap": true,
         "outDir": "dist",
         "baseUrl": "src/",
@@ -22,6 +23,7 @@
         "src/**/*"
     ],
     "exclude": [
+        "node_modules",
         "src/**/_test",
         "src/**/*.test.ts"
     ]
