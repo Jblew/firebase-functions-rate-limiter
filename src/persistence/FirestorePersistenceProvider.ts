@@ -70,6 +70,10 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
     private async saveRecord(collectionName: string, recordName: string, record: PersistenceRecord): Promise<void> {
         this.debugFn("Save record collection=" + collectionName + ", document=" + recordName);
         await this.getDocumentRef(collectionName, recordName).set(record);
+        await this.getDocumentRef(collectionName, recordName).set({
+            u: record.u,
+            expireAt: record.expireAt ? admin.firestore.Timestamp.fromMillis(record.expireAt * 1000) : null
+        });
     }
 
     private getDocumentRef(
@@ -82,6 +86,7 @@ export class FirestorePersistenceProvider implements PersistenceProvider {
     private createEmptyRecord(): PersistenceRecord {
         return {
             u: [],
+            expireAt: null
         };
     }
 

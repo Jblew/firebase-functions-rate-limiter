@@ -72,6 +72,7 @@ export class GenericRateLimiter {
 
         const newRecord: PersistenceRecord = {
             u: recentUsages,
+            expireAt: timestampsSeconds.expireAt
         };
         return newRecord;
     }
@@ -91,11 +92,12 @@ export class GenericRateLimiter {
         return numOfRecentUsages >= this.configuration.maxCalls;
     }
 
-    private getTimestampsSeconds(): { current: number; threshold: number } {
+    private getTimestampsSeconds(): { current: number; threshold: number, expireAt: number } {
         const currentServerTimestampSeconds: number = this.timestampProvider.getTimestampSeconds();
         return {
             current: currentServerTimestampSeconds,
             threshold: currentServerTimestampSeconds - this.configuration.periodSeconds,
+            expireAt: currentServerTimestampSeconds + this.configuration.periodSeconds
         };
     }
 }

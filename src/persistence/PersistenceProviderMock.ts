@@ -52,6 +52,7 @@ export class PersistenceProviderMock implements PersistenceProvider {
     private createEmptyRecord(): PersistenceRecord {
         return {
             u: [],
+            expireAt: null
         };
     }
 

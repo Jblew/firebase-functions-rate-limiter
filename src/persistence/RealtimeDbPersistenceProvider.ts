@@ -76,6 +76,7 @@ export class RealtimeDbPersistenceProvider implements PersistenceProvider {
     private createEmptyRecord(): PersistenceRecord {
         return {
             u: [],
+            expireAt: null
         };
     }
 }
